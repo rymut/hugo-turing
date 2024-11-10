@@ -1,0 +1,15 @@
+{{/* 
+    @brief Check if argument is a number
+    @returns
+        Partial return true if argument is float or string (@see is_int, @see is_float)
+*/}}
+
+{{ $result := false }}
+
+{{ if partial "turing/types/traits/is_float" . }}
+    {{ $result = true }}
+{{ else if partial "turing/types/traits/is_int" . }}
+    {{ $result = true }}
+{{ end }}
+
+{{ return $result }}

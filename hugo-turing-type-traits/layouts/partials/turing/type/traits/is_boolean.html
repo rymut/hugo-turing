@@ -1,0 +1,8 @@
+{{ $value := . }}
+
+{{ $result := false }}
+{{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
+    {{ $result = or (eq $value true) (eq $value false) }}
+{{ end }}
+
+{{ return $result }}

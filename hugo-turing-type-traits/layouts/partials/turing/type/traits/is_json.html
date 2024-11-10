@@ -1,0 +1,45 @@
+{{/*
+    @brief Check if argument is valid json value
+
+    @returns
+        This partial return true if value is "fuzzy" json string so value is:
+        
+        - boolean value (true/false)
+        - numerical value (float or int)
+        - null
+        - string enclosed in:
+            - " and "
+            - { and }
+            - [ and ]
+*/}}
+
+{{ $value := .   }}
+
+{{ $result := false }}
+{{ if or (reflect.IsMap $value) (reflect.IsSlice $value) }}
+    {{ $result = false }}
+{{ else }}
+    {{ $is_string := partial "turing/type/traits/is_string" $value }}
+    {{ if $is_string }}
+        {{ if or (eq $value "null") }}
+            {{ $result = true }}
+        {{ else if or (eq $value "false") (eq $value "true") }}
+            {{ $result = true }}
+        {{ else if ne (len (findRE `^-?(?:(?:(?:[1-9]\d*|\d)(?:\.\d+)?)|\.\d+)$` (string $value))) 0 }}
+            {{ $result = true }}
+        {{ else if and (hasPrefix $value "[") (hasSuffix $value "]")}}
+            {{ $result = true }}
+        {{ else if and (hasPrefix $value `}`) (hasSuffix $value `}`) }}
+            {{ $result = true }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ return $result }}
+``
+`true`
+`false`
+`\d+([.,]\d+)`
+`".*"`
+`{.*}`
+`[.*]`

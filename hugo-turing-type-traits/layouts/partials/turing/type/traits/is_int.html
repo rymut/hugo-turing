@@ -1,0 +1,14 @@
+{{ $value := . }}
+
+{{ $result := false }}
+
+{{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
+    {{ if ne (len (findRE `^[+-]?\d+$` (string $value))) 0 }}
+        {{ $result = eq $value (int $value) }}
+        {{ if eq $result false }}
+            {{ $result = eq $value (float $value) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ return $result }}

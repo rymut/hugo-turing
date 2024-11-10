@@ -1,0 +1,19 @@
+{{/*
+    @brief Check if passed value is unsigned number
+
+    @returns
+        This partial returns `true` if passed value is unsigned number or its string representation
+*/}}
+{{ $value := . }}
+
+{{ $result := false }}
+{{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
+    {{ if ne (len (findRE `^\+?\d+$` (string $value))) 0 }}
+        {{ $result = and (eq $value (int $value)) (ge (int $value) 0) }}
+        {{ if eq $result false }}
+            {{ $result = and (eq $value (float $value)) (ge (float $value) 0) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ return $result }}

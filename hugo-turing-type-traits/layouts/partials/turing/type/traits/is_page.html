@@ -1,0 +1,10 @@
+{{ $value := . }}
+
+{{ $result := false }}
+{{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
+    {{ $dump := $value | jsonify | transform.Unmarshal }}
+    {{ $str := print $value }}
+    {{ $result = and (or (eq (substr $str 0 6) "&{Page") (eq $str 0 4 "Page")) (or (isset $dump "PageWithoutContent") (isset $dump "ContentProvider")) }}
+{{ end }}
+{{ return $result }}
+
