@@ -1,0 +1,49 @@
+{{/*
+    @brief Execute templates
+    
+    @param partial The partial to call during execution stage
+    @param arguments The partial arguments (json encoded value)
+    @param operator The operator to compare actual result to @p expected and @p options 
+    @param expected The expected value (optional for some operatators) 
+*/}}
+{{ $partial := .Get "partial" }}
+{{ $expected := .Get "expected" }}
+{{ $operator := .Get "operator" }}
+{{ $options := .Get "options" }}
+{{ $arguments := .Get "arguments" }}
+
+{{/* Get actual value of partial */}}
+{{ $actual := default nil }}
+{{ $called := false }}
+
+{{ if partial "turing/type/traits/is_json" $arguments }}
+    {{ $arguments = index ((printf `{"data":%s}` (print $arguments)) | transform.Unmarshal) "data" }}
+{{ end }}
+
+{{ $arguments }}
+{{ if templates.Exists (printf "partials/%s.html" $partial) }}
+    {{ $called = true }}
+    {{ $actual = partial $partial $arguments }}
+{{ end }}
+
+{{ $expected_is_json := partial "turing/type/traits/is_json" $expected }}
+{{ if $expected_is_json }}
+    {{ $expected = index ((printf `{"data":%s}` (print $expected)) | transform.Unmarshal) "data" }}
+{{ end }}
+{{ $result := false }}
+{{ if $called }}
+    {{ $result = partial  "turing/test/operator" (dict "expr" $operator "actual" $actual "expected" $expected "options" $options) }}
+{{ end }}
+
+
+<ul>
+    <li>Arguments: {{ $arguments }} </li>
+    {{ if not $called }} ☠️ {{ end }}
+    {{ if and $called $result }} ✔️ {{ else }} ❌ {{ end }}
+    {{ $expected_is_json }}
+    <li>Partial: {{ $partial }} (found: {{ $called }})</li>
+    <li>Operator: {{ $operator }}</li>
+    <li>Expected: {{ $expected }}</li>
+    <li>Actual: {{ $actual }} </li>
+    <li>Result: {{ $result }}</li>
+</ul>

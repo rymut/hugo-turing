@@ -1,0 +1,36 @@
+{{/*
+    @brief Invoke operator
+
+    @param expr Operator expression "eq", "ne" 
+    @param expected The expected value
+    @param actual The actual value
+    @param options options for operator 
+    
+    @returns
+        This partial returns true if value expected is equal actual value
+*/}}
+
+{{ $expr := "" }}
+{{ $expected := default nil }}
+{{ $actual := default nil }}
+{{ $options := default nil }}
+
+{{ if reflect.IsSlice . }}
+    {{ $expr = index . 0 }}
+    {{ $expected = index . 1 }}
+    {{ $actual = index . 2 }}
+    {{ $options = default $options (index . 3) }}
+{{ else if reflect.IsMap . }}
+    {{ $expr = default $expr .expr }}
+    {{ $expected = default $expected .expected }}
+    {{ $actual = default $actual .actual }}
+    {{ $options = default $options .options }}
+{{ end }}
+
+{{ $result := false }}
+{{ $partial := printf "turing/test/operator/%s" $expr }}
+{{ if templates.Exists (printf "partials/%s.html" $partial) }}
+    {{ $result = partial $partial (dict "expected" $expected "actual" $actual "options" $options) }}
+{{ end }}
+
+{{ return $result }}
