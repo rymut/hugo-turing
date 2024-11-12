@@ -1,0 +1,13 @@
+{{/*
+    @brief Transform object to json string
+
+    @param . The object to convert
+
+    @returns
+        This partial returns serialized object if object was  if object cannot be deserialized
+*/}}
+{{ $result := . }}
+{{ if not (partial "turing/reflect/is_json" .) }}
+    {{ $result = . | jsonify }}
+{{ end }}
+{{ return $result }}

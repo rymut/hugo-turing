@@ -19,7 +19,7 @@
 {{ if or (reflect.IsMap $value) (reflect.IsSlice $value) }}
     {{ $result = false }}
 {{ else }}
-    {{ $is_string := partial "turing/type/traits/is_string" $value }}
+    {{ $is_string := partial "turing/reflect/is_string" $value }}
     {{ if $is_string }}
         {{ if or (eq $value "null") }}
             {{ $result = true }}
@@ -36,10 +36,3 @@
 {{ end }}
 
 {{ return $result }}
-``
-`true`
-`false`
-`\d+([.,]\d+)`
-`".*"`
-`{.*}`
-`[.*]`

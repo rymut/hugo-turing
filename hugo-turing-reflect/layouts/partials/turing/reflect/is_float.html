@@ -9,9 +9,6 @@
 {{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
     {{ if ne (len (findRE `^[+-]?(?:(?:(?:[1-9]\d*|\d)(?:\.\d*)?)|\.\d*)$` (string $value))) 0 }}
         {{ $result = eq $value (float $value) }}
-        {{ if eq $result false }}
-            {{ $result = eq $value (int $value) }}
-        {{ end }}
     {{ end }}
 {{ end }}
 

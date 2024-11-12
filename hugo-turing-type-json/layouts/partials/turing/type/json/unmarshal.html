@@ -1,0 +1,13 @@
+{{/*
+    @brief Transform json string to object
+    
+    @param . The string to convert
+
+    @returns
+        This partial returns deserialized object or passed object if it is not a json string
+*/}}
+{{ $result := . }}
+{{ if partial "turing/reflect/is_json" . }}
+    {{ $result = index ((printf `{"data":%s}` (print .)) | transform.Unmarshal) "data" }}
+{{ end }}
+{{ return $result }}

@@ -16,8 +16,10 @@
 {{ $actual := default nil }}
 {{ $called := false }}
 
-{{ if partial "turing/type/traits/is_json" $arguments }}
-    {{ $arguments = index ((printf `{"data":%s}` (print $arguments)) | transform.Unmarshal) "data" }}
+{{ $is_string := partial "turing/reflect/is_string" $arguments }}
+
+{{ if partial "turing/reflect/is_json" $arguments }}
+    {{ $arguments = partial "turing/type/json/unmarshal" $arguments }}
 {{ end }}
 
 {{ $arguments }}
@@ -26,9 +28,9 @@
     {{ $actual = partial $partial $arguments }}
 {{ end }}
 
-{{ $expected_is_json := partial "turing/type/traits/is_json" $expected }}
+{{ $expected_is_json := partial "turing/reflect/is_json" $expected }}
 {{ if $expected_is_json }}
-    {{ $expected = index ((printf `{"data":%s}` (print $expected)) | transform.Unmarshal) "data" }}
+    {{ $expected = partial "turing/type/json/unmarshal" $expected }}
 {{ end }}
 {{ $result := false }}
 {{ if $called }}
@@ -37,7 +39,6 @@
 
 
 <ul>
-    <li>Arguments: {{ $arguments }} </li>
     {{ if not $called }} ☠️ {{ end }}
     {{ if and $called $result }} ✔️ {{ else }} ❌ {{ end }}
     {{ $expected_is_json }}
