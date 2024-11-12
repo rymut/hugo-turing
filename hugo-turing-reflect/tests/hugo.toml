@@ -1,0 +1,14 @@
+baseURL = 'https://example.org/'
+languageCode = 'en-us'
+title = 'Turing Reflact Tests'
+
+[module.hugoVersion]
+min = "0.111.3"
+extended = false
+
+[module]
+  workspace = "../../hugo.work"
+  [[module.imports]]
+    path = "github.com/rymut/hugo-turing/hugo-turing-test-theme"
+
+    
