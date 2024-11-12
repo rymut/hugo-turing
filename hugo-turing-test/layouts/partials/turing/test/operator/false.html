@@ -1,0 +1,26 @@
+{{/*
+    @brief False operator 
+
+    @param expected The expected value
+    @param actual The actual value
+
+    @returns
+        This partial returns true if actual is false like value 
+*/}}
+
+{{ $expected := default nil }}
+{{ $actual := default nil }}
+
+{{ if reflect.IsSlice . }}
+    {{ $expected = default $expected (index . 1) }}
+    {{ $actual = default $actual (index . 2) }}
+{{ else if reflect.IsMap . }}
+    {{ $expected = default $expected .expected }}
+    {{ $actual = default $actual .actual }}
+{{ end }}
+
+{{ $result := false }}
+{{ if not $actual }}
+    {{ $result = true }}
+{{ end }}
+{{ return $result }}
