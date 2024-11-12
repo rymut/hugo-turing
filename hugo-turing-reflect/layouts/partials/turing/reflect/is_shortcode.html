@@ -1,0 +1,16 @@
+{{/*
+    @brief Check if shortcode exists
+
+    @param object The string containing location to check (excluding shortcodes/)
+
+    @returns
+        The partial returns true if partial exists, false otherwise
+*/}}
+{{ $object = . }}
+{{ $result := false }}
+
+{{ if templates.Exists (printf "shortcodes/%s" $object) }}
+    {{ $result = true }}
+{{ end }}
+
+{{ return $result }}
