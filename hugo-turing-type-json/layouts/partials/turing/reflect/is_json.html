@@ -1,6 +1,8 @@
 {{/*
     @brief Check if argument is valid json value
 
+    @param . The object to check if is json string
+
     @returns
         This partial return true if value is "fuzzy" json string so value is:
         
@@ -30,6 +32,8 @@
         {{ else if and (hasPrefix $value "[") (hasSuffix $value "]")}}
             {{ $result = true }}
         {{ else if and (hasPrefix $value `}`) (hasSuffix $value `}`) }}
+            {{ $result = true }}
+        {{ else if and (hasPrefix $value `"`) (hasSuffix $value `"`) }}
             {{ $result = true }}
         {{ end }}
     {{ end }}
