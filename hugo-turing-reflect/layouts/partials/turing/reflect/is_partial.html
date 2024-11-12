@@ -1,0 +1,16 @@
+{{/*
+    @brief Check if partial exists
+
+    @param object The string containing location to check (excluding partials/)
+
+    @returns
+        The partial returns true if partial exists, false otherwise
+*/}}
+{{ $partial = . }}
+{{ $result := false }}
+
+{{ if templates.Exists (printf "partials/%s" $partial) }}
+    {{ $result = true }}
+{{ end }}
+
+{{ return $result }}
