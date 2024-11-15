@@ -1,4 +1,4 @@
-module test
+module github.com/rymut/hugo-turing/hugo-turing-reflect/tests
 
 go 1.23.2
 
