@@ -1,0 +1,68 @@
+{{/*
+    document: slice of Token
+    Token: map
+        type: string
+            - PROCESSING_INSTRUCTION : <?xml(-.*)? ?>
+            - ELEMENT: /<\s*\w* >/ or </..> or <.../>
+            - CDATA_SECTION: `<!CDATA[[ … ]]>`
+            - COMMENT: '<!-- -->'
+            - TEXT: inner of tag or value of attribute
+        value: string
+
+    @returns
+        Slice of tokens containeed in markup
+*/}}
+{{ $markupText := . }}
+
+{{ $tokens := slice }}
+
+{{ range $markupIndex, $markupSeq := seq (len $markupText) }}
+    {{ if eq $markupText "" }}
+        {{ break }}
+    {{ end }}
+    {{ $tokenType := default nil }}
+    {{ $tokenValue := default nil }}
+    {{ $match := slice }}
+    {{ $matchReverse := "" }}
+    {{ if hasPrefix $markupText "<?" }}
+        {{ $tokenType = "PROCESSING_INSTRUCTION" }}
+        {{ $match = split $markupText ">" }}
+        {{ if gt (len $match) 1 }}
+            {{ $match = slice (printf "%s%s" (index $match 0) ">") }}
+        {{ end }}
+    {{ else if hasPrefix $markupText "<!CDATA[[" }}
+        {{ $tokenType = "CDATA_SECTION" }}
+        {{ $match = split $markupText "]]>" }}
+        {{ if gt (len $match) 1 }}
+            {{ $match = slice (printf "%s%s" (index $match 0) "]]>") }}
+        {{ end }}
+    {{ else if hasPrefix $markupText `<!--` }}
+        {{ $tokenType = "COMMENT" }}
+        {{ $match = split $markupText "-->" }}
+        {{ if gt (len $match) 1 }}
+            {{ $match = slice (printf "%s%s" (index $match 0) "-->") }}
+        {{ end }}
+    {{ else if hasPrefix $markupText `<` }}
+        {{ $tokenType = "ELEMENT" }}
+        {{ $match = findRE `[^>]+>` $markupText 1 }}
+    {{ else }}
+        {{ $tokenType = "TEXT" }}
+        {{ $match = findRE `[^<]*` $markupText 1 }}
+    {{ end }}
+
+    {{ if ne $matchReverse "" }}
+        {{ if len $match }}
+            {{ $matchReverseSize := len $matchReverse }}
+            {{ $matchLen := sub (len $markupText) (sub (len (index $match 0)) $matchReverseSize) }}
+            {{ $match = slice (substr $markupText 0 $matchLen) }}
+        {{ else }}
+            {{ $match = slice $markupText }}
+        {{ end }}
+    {{ end }}
+    {{ $tokenValue = index $match 0 }}
+    {{ $markupText = substr $markupText (len $tokenValue) }}
+    {{ $token := dict "type" $tokenType "value" $tokenValue }}
+    {{ $tokens = $tokens  | append $token }}
+{{ end }}
+
+{{ return $tokens }}

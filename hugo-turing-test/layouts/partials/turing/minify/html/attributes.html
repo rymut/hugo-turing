@@ -1,0 +1,38 @@
+{{ $attributesText := . }}
+
+{{ $attributes := slice }}
+{{ range $i, $v := seq (len $attributesText) }}
+    {{ if eq $attributesText "" }}
+        {{ break }}
+    {{ end }}
+    {{ $attributeName := findRE `[^\s=]+` $attributesText 1 }}
+    {{ if len $attributeName }} 
+        {{ $attributeName = index $attributeName 0 }}
+        {{ $attributesText = strings.TrimSpace (substr $attributesText (len $attributeName)) }}
+        {{ $attributeHasValue := findRE `=\s*` $attributesText 1 }}
+        {{ $attributeValue := "" }}
+        {{ if len $attributeHasValue }}
+            {{ $attributesText = strings.TrimSpace (substr $attributesText (len (index $attributeHasValue 0))) }}
+            {{ $attributeTrimChar := "" }}
+            {{ if hasPrefix $attributesText `"` }}
+                {{ $attributeValue = findRE `"[^"]*"` $attributesText 1 }}
+                {{ $attributeTrimChar = `"` }}
+            {{ else if hasPrefix $attributesText `'` }}
+                {{ $attributeValue = findRE `'[^']*'` $attributesText 1 }}
+                {{ $attributeTrimChar = `'` }}
+            {{ else }}
+                {{ $attributeValue = findRE `[^\s]*` $attributesText 1 }}
+            {{ end }}
+            {{ if len $attributeValue }}
+                {{ $attributeValue = index $attributeValue 0 }}
+            {{ else }}
+                {{ $attributeValue = $attributesText }}
+            {{ end }}
+            {{ $attributesText = strings.TrimSpace (substr $attributesText (len $attributeValue)) }}
+            {{ $attributeValue = trim $attributeValue $attributeTrimChar }}
+        {{ end }}
+        {{ $attributes = $attributes | append (dict "name" $attributeName "value" $attributeValue) }}
+    {{ end }}
+{{ end }}
+
+{{ return $attributes }}

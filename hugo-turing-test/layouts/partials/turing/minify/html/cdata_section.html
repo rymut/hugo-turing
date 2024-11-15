@@ -1,0 +1,27 @@
+{{/*
+    Element: map
+        type: "CDATA_SECTION"
+        value: ""
+    @returns element    
+*/}}
+
+{{ $cdataSectionText := . }}
+
+{{ $elementType := "UNKNOWN" }}
+{{ $result := dict }}
+
+{{ $prefix := "<!CDATA[[" }}
+{{ $suffix := "]]>" }}
+{{ $minLen := len (printf "%s%s" $prefix $suffix) }}
+{{ if and (hasPrefix $cdataSectionText $prefix) (hasSuffix $cdataSectionText $suffix) (gt (len $cdataSectionText) $minLen) }}
+    {{ $elementType = "CDATA_SECTION" }}
+{{ end }}
+
+{{ if eq $elementType "CDATA_SECTION" }}
+    {{ $cdataSectionText = substr $cdataSectionText (len $prefix) (sub (len $cdataSectionText) $minLen)}}
+    {{ $result = dict "type" $elementType "value" $cdataSectionText }}
+{{ else }}
+    {{ $result = dict "type" $elementType "value" $cdataSectionText }}
+{{ end }}
+
+{{ return $result }}

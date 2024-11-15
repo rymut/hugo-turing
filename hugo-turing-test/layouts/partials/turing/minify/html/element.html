@@ -1,0 +1,30 @@
+{{/*
+    Element: map
+        type: "START" or "END" "EMPTY"
+        value: nil
+        name: string
+        attributes: slice
+            name: string
+            value: string
+    @returns element    
+*/}}
+
+{{ $elementText := . }}
+
+{{ $elementType := "START" }}
+{{ if hasPrefix $elementText "</" }}
+    {{ $elementType = "END" }}
+{{ else if hasSuffix $elementText "/>" }}
+    {{ $elementType = "EMPTY" }}
+{{ end }}
+
+{{ $elementText = strings.TrimSpace (trim $elementText "<>/") }}
+
+{{ $elementName := index (findRE `[^\s]+` $elementText) 0 }}
+{{ $elementText = strings.TrimSpace (substr $elementText (len $elementName)) }}
+
+{{ $attributes := partial "turing/minify/html/attributes.html" $elementText }}
+
+{{ $result := dict "type" $elementType "name" $elementName "attributes" $attributes }}
+
+{{ return $result }}

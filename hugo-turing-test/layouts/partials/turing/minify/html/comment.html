@@ -1,0 +1,24 @@
+{{/*
+    Element: map
+        type: "COMMENT"
+        value: ""
+    @returns element    
+*/}}
+
+{{ $commentText := . }}
+
+{{ $elementType := "UNKNOWN" }}
+{{ $result := dict }}
+
+{{ if and (hasPrefix $commentText "<!--") (hasSuffix $commentText "-->") (gt (len $commentText) 7) }}
+    {{ $elementType = "COMMENT" }}
+{{ end }}
+
+{{ if eq $elementType "COMMENT" }}
+    {{ $commentText = substr $commentText 4 (sub (len $commentText) 7)}}
+    {{ $result = dict "type" $elementType "value" $commentText }}
+{{ else }}
+    {{ $result = dict "type" $elementType "value" $commentText }}
+{{ end }}
+
+{{ return $result }}

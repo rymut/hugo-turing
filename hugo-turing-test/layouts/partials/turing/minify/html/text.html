@@ -1,0 +1,12 @@
+{{/*
+    Element: map
+        type: "TEXT"
+        value: ""
+    @returns element    
+*/}}
+
+{{ $text := . }}
+
+{{ $result := dict "type" "TEXT" "value" $text }}
+
+{{ return $result }}
