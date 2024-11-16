@@ -1,0 +1,85 @@
+{{ $input := . }}
+{{ $tokens := partial "turing/minify/html/tokenize.html" $input }}
+{{ $items := slice }}
+{{ range $token := $tokens }}
+    {{ $tokenType := index $token "type" }}
+    {{ $tokenValue := index $token "value" }}
+    {{ $item := default nil }}
+    {{ if eq $tokenType "ELEMENT" }}
+        {{ $item = partial "turing/minify/html/element.html" $tokenValue }}
+    {{ else if eq $tokenType "TEXT" }}
+        {{ $item = partial "turing/minify/html/text.html" $tokenValue }}
+    {{ else if eq $tokenType "COMMENT" }}
+        {{ $item = partial "turing/minify/html/comment.html" $tokenValue }}
+    {{ else if eq $tokenType "CDATA_SECTION" }}
+        {{ $item = partial "turing/minify/html/cdata_section.html" $tokenValue }}
+    {{ end}}
+    {{ if ne $item nil }}
+        {{ $items = $items | append $item }}
+    {{ end }}
+{{ end }}
+
+
+{{ $output := "" }}
+{{ $preElement := false }}
+{{ range $item := $items }}
+    {{ $tokenType := index $item "type" }}
+    {{ $value := "" }}
+    {{ if or (eq $tokenType "TEXT") (eq $tokenType "COMMENT")  (eq $tokenType "CDATA_SECTION") }}
+        {{ $value = index $item "value" }}
+        {{ if not $preElement }}
+            {{ $value = replaceRE `\s+` ` ` $value }}
+            {{ $value = strings.TrimSpace $value }}
+        {{ end }}
+        {{ $prefix := "" }}
+        {{ $suffix := "" }}
+        {{ if eq $tokenType "COMMENT" }}
+            {{ $prefix = "<!--" }}
+            {{ $suffix = "-->" }}
+        {{ else if eq $tokenType "CDATA_SECTION" }}
+            {{ $prefix = "<!CDATA[[" }}
+            {{ $suffix = "]]>" }}
+        {{ end }}
+        {{ $output = printf "%s%s%s%s" $output $prefix $value $suffix }}
+    {{ else if hasPrefix $tokenType "ELEMENT_" }}
+        {{/* Process element */}}
+        {{ $prefix := " <" }}
+        {{ $suffix := ">" }}
+        {{ $withAttrs := true }}
+        {{ if hasSuffix $tokenType "END" }}
+            {{ $withAttrs = false }}
+            {{ $prefix = "</" }}
+            {{ $suffix = "> " }}
+        {{ else if hasSuffix $tokenType "EMPTY" }}
+            {{ $suffix = "/>" }}
+            {{ $prefix = "<" }}
+        {{ end }}
+        {{ $tag := index $item "name" }}
+        {{ $elementAttrs := index $item "attributes" }}
+        {{ $attrs := "" }}
+        {{ if and $withAttrs (len $elementAttrs) }}
+            {{ range $attr := $elementAttrs }}
+                {{ $name := index $attr "name" }}
+                {{ $value := index $attr "value" }}
+                {{ $value = replaceRE `\s+` ` ` $value }}
+                {{ $value = replaceRE `[:;] ` `` $value }}
+                {{ $value = strings.TrimSpace $value }}
+
+                {{ if len $name }}
+                    {{ if len $value }}
+                        {{ $attrs = printf `%s %s="%s"` $attrs $name $value }}
+                    {{ else }}
+                        {{ $attrs = printf `%s %s` $attrs $name }}
+                    {{ end }}
+                {{ end }}
+            {{ end }}
+            {{ $attrs = strings.TrimSpace $attrs }}
+            {{ if len $attrs }}
+                {{ $attrs = printf " %s" $attrs }}
+            {{ end }}
+        {{ end }}
+        {{ $output = printf "%s%s%s%s%s" $output $prefix $tag $attrs $suffix }}
+    {{ end }}
+{{ end }}
+
+{{ return $output }}

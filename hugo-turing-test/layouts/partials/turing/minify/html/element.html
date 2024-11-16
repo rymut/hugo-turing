@@ -1,6 +1,6 @@
 {{/*
     Element: map
-        type: "START" or "END" "EMPTY"
+        type: "ELEMENT_START" or "ELEMENT_END" "ELEMENT_EMPTY"
         value: nil
         name: string
         attributes: slice
@@ -11,11 +11,11 @@
 
 {{ $elementText := . }}
 
-{{ $elementType := "START" }}
+{{ $elementType := "ELEMENT_START" }}
 {{ if hasPrefix $elementText "</" }}
-    {{ $elementType = "END" }}
+    {{ $elementType = "ELEMENT_END" }}
 {{ else if hasSuffix $elementText "/>" }}
-    {{ $elementType = "EMPTY" }}
+    {{ $elementType = "ELEMENT_EMPTY" }}
 {{ end }}
 
 {{ $elementText = strings.TrimSpace (trim $elementText "<>/") }}

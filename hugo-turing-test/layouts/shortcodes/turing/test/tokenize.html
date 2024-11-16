@@ -1,0 +1,25 @@
+{{/*
+    document: slice of Token
+    Token: map
+        type: string
+            - PROCESSING_INSTRUCTION : <?xml(-.*)? ?>
+            - ELEMENT: /<\s*\w* >/ or </..> or <.../>
+            - CDATA_SECTION: `<!CDATA[[ … ]]>`
+            - COMMENT: '<!-- -->'
+            - TEXT: inner of tag or value of attribute
+        value: string
+
+    @returns
+        Slice of tokens containeed in markup
+*/}}
+
+{{ $content := resources.Get "sample.html" }}
+{{ $content2 := resources.Get "sample2.html" }}
+
+data is {{ $content.MediaType }}
+
+{{ $output := partial "turing/minify/html.html" $content.Content }}
+{{ $output2 := partial "turing/minify/html.html" $content2.Content }}
+<pre>`{{ $output }}`</pre>
+
+<pre>`{{ $output2 }}`</pre>
