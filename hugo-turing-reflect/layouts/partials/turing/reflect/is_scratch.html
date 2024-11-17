@@ -2,8 +2,10 @@
 
 {{ $result := false }}
 {{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
-    {{ $dump := $value | jsonify | transform.Unmarshal }}
+    {{ $dump := $value | jsonify }}
+    {{ $dump = printf `{"data":%s}` $dump | transform.Unmarshal }}
+    {{ $dump = index $dump "data" }}
     {{ $result = and (eq (substr (print $value) 0 6) "&{map[") (eq (len $dump) 0) }}
 {{ end }}
-{{ return $result }}
 
+{{ return $result }}
