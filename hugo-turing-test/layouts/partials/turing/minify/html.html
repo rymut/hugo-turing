@@ -20,9 +20,59 @@
 {{ end }}
 
 
+{{ $spaces := slice }}
+{{/* compute accumulation back spaces */}}
+{{ $next := false }}
+{{ range $index, $item := $items }}
+    {{ $type := index $item "type" }}
+    {{ $current := $next }}
+    {{ if eq $type "TEXT" }}
+        {{ $value := index $item "value" }}
+        {{ $current = false }}
+        {{ $next = not (len (replaceRE `\s` `` (substr $value -1))) }}
+    {{ end }}
+    {{ $spaces = $spaces | append $current }}
+{{ end }}
+
+{{/* compute accumalation front spaces */}}
+{{ $backspaces := slice }}
+{{ $next = false }}
+{{ range $index := seq 0 (len $spaces) | collections.Reverse | after 1 }}
+    {{ $item := index $items $index }}
+    {{ $type := index $item "type" }}
+    {{ $current := $next }}
+    {{ $text := eq $type "TEXT" }}
+    {{ if eq $type "TEXT" }}
+        {{ $value := index $item "value" }}
+        {{ $current = false }}
+        {{ $next = not (len (replaceRE `\s` `` (substr $value -1))) }}
+    {{ end }}
+    {{ $backspaces = $backspaces | append $current }}
+{{ end }}
+
+{{ $target := slice }}
+{{ range $index, $item := $backspaces }}
+    {{ $value := or $item (index $backspaces $index) }}
+    {{ $target = $target | append $value }}
+{{ end }}
+
+{{ $edge := slice }}
+{{ $last := true }}
+{{ range $item := $target }}
+    {{ $value := false }}
+    {{ if and (not $last) $item }}
+        {{ $value = true }}
+    {{ end }}
+    {{ $last = $item }}
+    {{ $edge = $edge | append $value }}
+{{ end }}
+
+{{/* render minimized */}}
 {{ $output := "" }}
 {{ $preElement := false }}
-{{ range $item := $items }}
+{{ $spaceBefore := false }}
+{{ range $index, $item := $items }}
+    {{ $hasEdge := index $edge $index }}
     {{ $tokenType := index $item "type" }}
     {{ $value := "" }}
     {{ if or (eq $tokenType "TEXT") (eq $tokenType "COMMENT")  (eq $tokenType "CDATA_SECTION") }}
@@ -39,22 +89,39 @@
         {{ else if eq $tokenType "CDATA_SECTION" }}
             {{ $prefix = "<!CDATA[[" }}
             {{ $suffix = "]]>" }}
+        {{ else if eq $tokenType "TEXT" }}
+            {{ $spaceBefore = false }}
         {{ end }}
         {{ $output = printf "%s%s%s%s" $output $prefix $value $suffix }}
     {{ else if hasPrefix $tokenType "ELEMENT_" }}
         {{/* Process element */}}
-        {{ $prefix := " <" }}
+        {{ $prefix := "<" }}
+        {{ if and $hasEdge (not $spaceBefore) }}
+            {{ $prefix = " <" }}
+            {{ $spaceBefore = true }}
+        {{ end }}
         {{ $suffix := ">" }}
         {{ $withAttrs := true }}
         {{ if hasSuffix $tokenType "END" }}
             {{ $withAttrs = false }}
             {{ $prefix = "</" }}
-            {{ $suffix = "> " }}
+            {{ $suffix = ">" }}
+            {{ if and $hasEdge (not $spaceBefore) }}
+                {{ $suffix = "> " }}
+                {{ $spaceBefore = true }}
+            {{ end }}
         {{ else if hasSuffix $tokenType "EMPTY" }}
             {{ $suffix = "/>" }}
             {{ $prefix = "<" }}
+            {{ if and $hasEdge (not $spaceBefore) }}
+                {{ $suffix = "/> " }}
+                {{ $spaceBefore = true }}
+            {{ end }}
         {{ end }}
         {{ $tag := index $item "name" }}
+        {{ if eq $tag "pre" }}
+            {{ $preElement = not $preElement }}
+        {{ end }}
         {{ $elementAttrs := index $item "attributes" }}
         {{ $attrs := "" }}
         {{ if and $withAttrs (len $elementAttrs) }}
@@ -80,6 +147,8 @@
         {{ end }}
         {{ $output = printf "%s%s%s%s%s" $output $prefix $tag $attrs $suffix }}
     {{ end }}
+    {{ $output2 := printf "%s[%d=%t]" $output $index $hasEdge}}
 {{ end }}
-
+{{ $output2 := "" }}
+{{ $output2 = dict "s" $spaces "b" $backspaces "output" $output "t" $target "e" $edge "x" $items }}
 {{ return $output }}
