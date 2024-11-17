@@ -31,7 +31,7 @@
             {{ $result = true }}
         {{ else if and (hasPrefix $value "[") (hasSuffix $value "]")}}
             {{ $result = true }}
-        {{ else if and (hasPrefix $value `}`) (hasSuffix $value `}`) }}
+        {{ else if and (hasPrefix $value `{`) (hasSuffix $value `}`) }}
             {{ $result = true }}
         {{ else if and (hasPrefix $value `"`) (hasSuffix $value `"`) }}
             {{ $result = true }}
