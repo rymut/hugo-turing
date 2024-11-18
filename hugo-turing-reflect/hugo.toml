@@ -2,3 +2,6 @@
 min = "0.111.3"
 extended = false
 
+[module]
+  [[module.imports]]
+    path = "github.com/rymut/hugo-turing/hugo-turing-core"

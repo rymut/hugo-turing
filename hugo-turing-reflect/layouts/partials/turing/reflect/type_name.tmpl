@@ -1,0 +1,41 @@
+{{/*
+    @brief Return hugo type name
+
+    @param . The value to get type name
+*/}}
+
+{{ $object := . }}
+
+{{ $base_types := slice "boolean" "float" "int" "scratch" "string" "map" "slice" }}
+{{ $site_types := partial "turing/params.tmpl" (slice "types" slice) }}
+{{ $result := default nil }}
+
+{{ if len $site_types }}
+    {{ range $known_type := $site_types }}
+        {{ $partial := printf "turing/reflect/is_%s.html" $known_type }}
+        {{ if templates.Exists (printf "partials/%s" $partial) }}
+            {{ if partial $partial $object }}
+                {{ $result = $known_type }}
+                {{ break }}
+            {{ end }}
+        {{ else }}
+            {{ partial "turing/warnidf.tmpl" (slice 1 "Partial '%s' not found" $partial) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ if not $result }}
+    {{ range $known_type := $base_types }}
+        {{ $partial := printf "turing/reflect/is_%s.html" $known_type }}
+        {{ if templates.Exists (printf "partials/%s" $partial) }}
+            {{ if partial $partial $object }}
+                {{ $result = $known_type }}
+                {{ break }}
+            {{ end }}
+        {{ else }}
+            {{ partial "turing/warnidf.tmpl" (slice 1 "Partial '%s' not found" $partial) }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ return $result }}

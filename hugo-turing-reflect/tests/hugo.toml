@@ -10,5 +10,7 @@ extended = false
   workspace = "../../hugo.work"
   [[module.imports]]
     path = "github.com/rymut/hugo-turing/hugo-turing-test-theme"
-
     
+[params]
+  [params.turing]
+    types = ['json']
