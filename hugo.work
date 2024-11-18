@@ -1,0 +1,17 @@
+go 1.23.2
+
+use ./hugo-turing-core
+use ./hugo-turing-reflect
+use ./hugo-turing-test
+use ./hugo-turing-test-theme
+use ./hugo-turing-type-html
+use ./hugo-turing-type-json
+
+replace (
+	github.com/rymut/hugo-turing/hugo-turing-core v0.0.0 => ./hugo-turing-core
+	github.com/rymut/hugo-turing/hugo-turing-reflect v0.0.0 => ./hugo-turing-reflect
+	github.com/rymut/hugo-turing/hugo-turing-test v0.0.0 => ./hugo-turing-test
+	github.com/rymut/hugo-turing/hugo-turing-test-theme v0.0.0 => ./hugo-turing-test-theme
+	github.com/rymut/hugo-turing/hugo-turing-type-json v0.0.0 => ./hugo-turing-type-json
+	github.com/rymut/hugo-turing/hugo-turing-type-html v0.0.0 => ./hugo-turing-type-html
+)
