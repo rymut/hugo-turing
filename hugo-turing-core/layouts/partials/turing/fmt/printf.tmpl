@@ -1,0 +1,57 @@
+{{ $args := . }}
+{{ $format := index $args 0 }}
+
+{{ $parts := split $format "%" }}
+{{ $tokens := slice }}
+
+{{ $isFormat := false }}
+{{ $isPercent := false }}
+{{ range $index, $part := $parts }}
+    {{ $token := default nil }}
+    {{ $text := default nil }}
+    {{ if and (ne $part "") }}
+        {{ $fmt := `^[#\- 0]*((?:\d+|\[[^]]*\]\*)?\.?(?:\d+|\[[^]]*\]\*)(?:\+(\d+|\[[^]]*\]\*)?\.?(\d+|\[[^]]*\]\*))?)?(\[\d*\])?[bcdeEfFgGoOpqstTUxX]?` }}
+        {{ $match := findRE $fmt $part 1 }}
+        {{ if and  $match $isFormat }}
+            {{ $token = dict "format" (print "%" (index $match 0)) }}
+            {{ $text = substr $part (len $token) }}
+        {{ else }}
+            {{ $text = $part }}
+        {{ end }}
+        {{ $isFormat = true }}
+    {{ else }}
+        {{ if not $tokens }}
+            {{ $isFormat = true }}
+        {{ else if and (not $isPercent) }}
+            {{ $text = "%%" }}
+            {{ $isPercent = true }}
+        {{ else }}
+            {{ $isFormat = false }}
+            {{ $isPercent = false }}
+        {{ end }}
+    {{ end }}
+
+    {{ if $token }}
+        {{ $tokens = $tokens | append $token }}
+    {{ end }}
+    {{ if $text }}
+        {{ $tokens = $tokens | append $text }}
+    {{ end }}
+{{ end }}
+
+{{ $output := "" }}
+{{ $index := 0 }}
+{{ range $token := $tokens }}
+    {{ $format := $token }}
+    {{ $value := "" }}
+    {{ if reflect.IsMap $token }}
+        {{ $index = add $index 1 }}
+        {{ $format = index $token "format" }}
+        {{ $value = index $args $index }}
+        {{ $output = print $output (printf $format $value) }}
+    {{ else }}
+        {{ $output = print $output (printf $format) }}
+    {{ end }}
+{{ end }}
+
+{{ return $output }}

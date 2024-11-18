@@ -1,0 +1,17 @@
+{{ $result := default nil }}
+
+{{ if and (reflect.IsSlice .) (len .) }}
+    {{ $id := print "warning-turing-" (index . 0) }}
+    {{ $format := slice }}
+    {{ if ge (len .) 1 }}
+        {{ $format = after 1 . }}
+    {{ end }}
+    {{ $msg := partial "turing/fmt/printf.tmpl" $format }}
+    {{ if ge (hugo.Version) "v0.123.0" }}
+        {{ warnidf $id "%s" $msg }}
+    {{ else }}
+        {{ warnf "%s: testing %s" $id $msg }}
+    {{ end }}
+{{ else }}
+
+{{ end }}
