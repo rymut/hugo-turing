@@ -1,0 +1,10 @@
+{{/*
+    @brief Type wise check if argument is map
+    
+    @param value The value to be checked
+*/}}
+{{ $value := . }}
+
+{{ $result := reflect.IsSlice $value }}
+
+{{ return $result }}
