@@ -20,13 +20,26 @@
 {{ end }}
 
 
+{{ $preElement := false }}
 {{ $spaces := slice }}
 {{/* compute accumulation back spaces */}}
 {{ $next := false }}
+
+{{ $preElement = false }}
 {{ range $index, $item := $items }}
     {{ $type := index $item "type" }}
     {{ $current := $next }}
-    {{ if eq $type "TEXT" }}
+    {{ $text := eq $type "TEXT" }}
+    {{ if hasPrefix $type "ELEMENT_" }}
+        {{ $tag := index $item "name" }}
+        {{ if eq $tag "pre" }}
+            {{ if or (hasSuffix $type "START") (hasSuffix $type "END") }}
+                {{ $preElement = not $preElement }}
+            {{ end }}
+            {{ $next = false }}
+        {{ end }}
+    {{ end }}
+    {{ if and $text (not $preElement) }}
         {{ $value := index $item "value" }}
         {{ $current = false }}
         {{ $next = not (len (replaceRE `\s` `` (substr $value -1))) }}
@@ -37,22 +50,32 @@
 {{/* compute accumalation front spaces */}}
 {{ $backspaces := slice }}
 {{ $next = false }}
+{{ $preElement = false }}
 {{ range $index := seq 0 (len $spaces) | collections.Reverse | after 1 }}
     {{ $item := index $items $index }}
     {{ $type := index $item "type" }}
     {{ $current := $next }}
     {{ $text := eq $type "TEXT" }}
-    {{ if eq $type "TEXT" }}
+    {{ if hasPrefix $type "ELEMENT_" }}
+        {{ $tag := index $item "name" }}
+        {{ if eq $tag "pre" }}
+            {{ if or (hasSuffix $type "START") (hasSuffix $type "END") }}
+                {{ $preElement = not $preElement }}
+            {{ end }}
+            {{ $next = false }}
+        {{ end }}
+    {{ end }}
+    {{ if and $text (not $preElement) }}
         {{ $value := index $item "value" }}
         {{ $current = false }}
-        {{ $next = not (len (replaceRE `\s` `` (substr $value -1))) }}
+        {{ $next = not (len (replaceRE `\s` `` (substr $value 0 1))) }}
     {{ end }}
     {{ $backspaces = $backspaces | append $current }}
 {{ end }}
 
 {{ $target := slice }}
 {{ range $index, $item := $backspaces }}
-    {{ $value := or $item (index $backspaces $index) }}
+    {{ $value := or $item (index $spaces $index) }}
     {{ $target = $target | append $value }}
 {{ end }}
 
@@ -69,7 +92,7 @@
 
 {{/* render minimized */}}
 {{ $output := "" }}
-{{ $preElement := false }}
+{{ $preElement = false }}
 {{ $spaceBefore := false }}
 {{ range $index, $item := $items }}
     {{ $hasEdge := index $edge $index }}
@@ -80,6 +103,7 @@
         {{ if not $preElement }}
             {{ $value = replaceRE `\s+` ` ` $value }}
             {{ $value = strings.TrimSpace $value }}
+            {{ $value = print $value }}
         {{ end }}
         {{ $prefix := "" }}
         {{ $suffix := "" }}
@@ -95,14 +119,23 @@
         {{ $output = printf "%s%s%s%s" $output $prefix $value $suffix }}
     {{ else if hasPrefix $tokenType "ELEMENT_" }}
         {{/* Process element */}}
-        {{ $prefix := "<" }}
-        {{ if and $hasEdge (not $spaceBefore) }}
-            {{ $prefix = " <" }}
-            {{ $spaceBefore = true }}
+        {{ $tag := index $item "name" }}
+        {{ if eq $tag "pre" }}
+            {{ if or (hasSuffix $tokenType "START") (hasSuffix $tokenType "END") }}
+                {{ $preElement = not $preElement }}
+                {{ $spaceBefore = false }}
+            {{ end }}
         {{ end }}
+
+        {{ $prefix := "<" }}
         {{ $suffix := ">" }}
         {{ $withAttrs := true }}
-        {{ if hasSuffix $tokenType "END" }}
+        {{ if hasSuffix $tokenType "START" }}
+            {{ if and $hasEdge (not $spaceBefore) }}
+                {{ $prefix = " <" }}
+                {{ $spaceBefore = true }}
+            {{ end }}
+        {{ else if hasSuffix $tokenType "END" }}
             {{ $withAttrs = false }}
             {{ $prefix = "</" }}
             {{ $suffix = ">" }}
@@ -117,10 +150,6 @@
                 {{ $suffix = "/> " }}
                 {{ $spaceBefore = true }}
             {{ end }}
-        {{ end }}
-        {{ $tag := index $item "name" }}
-        {{ if eq $tag "pre" }}
-            {{ $preElement = not $preElement }}
         {{ end }}
         {{ $elementAttrs := index $item "attributes" }}
         {{ $attrs := "" }}
@@ -147,8 +176,16 @@
         {{ end }}
         {{ $output = printf "%s%s%s%s%s" $output $prefix $tag $attrs $suffix }}
     {{ end }}
-    {{ $output2 := printf "%s[%d=%t]" $output $index $hasEdge}}
+    {{ $output3 := printf "%s[%d=%t,%t]" $output $index $hasEdge $spaceBefore}}
 {{ end }}
 {{ $output2 := "" }}
-{{ $output2 = dict "s" $spaces "b" $backspaces "output" $output "t" $target "e" $edge "x" $items }}
+{{ $output2 = dict "_0f" $spaces "_0b" $backspaces "output" $output "_0sum" $target "_0edge" $edge "x" $items }}
+
+{{ if hasPrefix $output " <" }}
+    {{ $output = substr $output 1 }}
+{{ end }}
+{{ if hasSuffix $output "> " }}
+    {{ $output = substr $output 0 -1 }}
+{{ end }}
 {{ return $output }}
+
