@@ -1,0 +1,72 @@
+{{- /*
+    @brief Lookup templates
+
+    @param type The "shortcodes" "partial" or nil
+    @param path The path for template
+    @param filter Return number of elements 1 and -1 will return string if template is found, otherwise will return slice of number of elements
+*/ -}}
+
+{{ $type := default nil }}
+{{ $path := default nil }}
+{{ $filter := 1 }}
+
+{{ if reflect.IsSlice . }}
+    {{ $type = index . 0 }}
+    {{ $path = index . 1 }}
+    {{ $filter = index . 2 | default $filter }}
+{{ else if reflect.IsMap . }}
+    {{ $type = index . "type" }}
+    {{ $path = index . "path" }}
+    {{ $filter = index . "filter" | default $filter }}
+{{ else }}
+    {{- "THROW ERROR" -}}
+{{ end }}
+
+{{ $prefixes := partial "turing/params" "lookup/prefix" }}
+{{ $suffixes := partial "turing/params" "lookup/suffix" }}
+{{ if ne $type nil }}
+    {{ $type = print $type "/" }}
+{{ end }}
+{{ $templates := slice }}
+{{ range $prefix := $prefixes }}
+    {{ range $suffix := $suffixes }}
+        {{ $prefixPath := $path }}
+        {{ if and (ne $prefix nil) (ne $prefix "") }}
+            {{ $prefixPath = printf "%s/%s" $prefix $path }}
+        {{ end }}
+        {{ $prefixSuffixPath := $prefixPath }}
+        {{ if ne (print $suffix) "" }}
+            {{ $prefixSuffixPath = printf "%s.%s" $prefixPath $suffix }}
+        {{ end }}
+        {{ if templates.Exists (printf "%s%s" $type $prefixSuffixPath) }}
+            {{ $template := $prefixSuffixPath }}
+            {{ if eq $suffix "html" }}
+                {{ $template = $prefixPath }}
+            {{ end }}
+            {{ $templates = $templates | append $template }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ if lt $filter 0 }}
+    {{ $templates = first $filter $templates }}
+{{ else if gt $filter 0 }}
+    {{ $templates = last $filter $templates }}
+{{ end }}
+
+{{ if len $templates }}
+    {{ if eq $filter 1 }}
+        {{ $templates = first 1 $templates }}
+    {{ else if eq $filter -1 }}
+        {{ $templates = last 1 $templates }}
+    {{ end }}
+{{ end }}
+{{ if or (eq $filter 1) (eq $filter -1) }}
+    {{ if not (len $templates) }}
+        {{ $templates = default nil }}
+    {{ else }}
+        {{ $templates = index $templates 0 }}
+    {{ end }}
+{{ end }}
+
+{{ return $templates }}

@@ -1,7 +1,7 @@
 {{ $result := default nil }}
 
 {{ if and (reflect.IsSlice .) (len .) }}
-    {{ $id := print "warning-turing-" (index . 0) }}
+    {{ $id := print (index . 0) }}
     {{ $format := slice }}
     {{ if ge (len .) 1 }}
         {{ $format = after 1 . }}

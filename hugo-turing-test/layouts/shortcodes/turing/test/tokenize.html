@@ -13,13 +13,15 @@
         Slice of tokens containeed in markup
 */}}
 
-{{ $content := resources.Get "sample.html" }}
-{{ $content2 := resources.Get "sample2.html" }}
+<h1>type: {{ partial "turing/reflect/type_name" "testing" }}</h1>
 
-data is {{ $content.MediaType }}
+{{ $content := "<pre>testing</pre>"}}
+{{ $output := partial "turing/minify/html.html" $content }}
 
-{{ $output := partial "turing/minify/html.html" $content.Content }}
-{{ $output2 := partial "turing/minify/html.html" $content2.Content }}
+
 <pre>`{{ $output }}`</pre>
+<pre>`{{ $output | jsonify (dict "indent" "  " "prefix" " ")}}`</pre>
 
-<pre>`{{ $output2 }}`</pre>
+{{ $tmp := default nil }}
+{{ $slice := seq 4 | collections.Reverse | after 1 }}
+<pre>{{$slice | append $tmp | append $tmp |  collections.Reverse }}</pre>

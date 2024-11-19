@@ -1,0 +1,25 @@
+{{- /* This is comment */ -}}
+
+{{ $context := default nil }}
+{{ $path := default nil }}
+{{ $result := default nil }}
+
+{{ if reflect.IsSlice . }}
+    {{ $context = index . 1 }}
+    {{ $path = index . 0 }}
+{{ else if reflect.IsMap . }}
+    {{ $context = index . "context" }}
+    {{ $path = index . "path" }}
+{{ else }}
+    {{ $path = . }}
+{{ end }}
+
+{{ $partial := partial "turing/lookup" (slice "partials" $path) }}
+{{ if ne $partial nil }}
+    {{ $result = partial $partial $context }}
+{{ else }}
+    {{ erroridf "error-turing-partial-not-found" "Partial not found '%s' by 'turing/partial'" $path  }}
+    {{ partial "turing/fmt/warnidf.tmpl" (slice "warning-turing-partial-not-found" "Partial not found '%s' by 'turing/partial', nil will be returned as a result" $path)  }}
+{{ end }}
+
+{{ return $result }}

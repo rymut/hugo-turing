@@ -7,7 +7,7 @@
 {{ $object := . }}
 
 {{ $base_types := slice "boolean" "float" "int" "scratch" "string" "map" "slice" }}
-{{ $site_types := partial "turing/params.tmpl" (slice "types" slice) }}
+{{ $site_types := partial "turing/params" (slice "types" slice) }}
 {{ $result := default nil }}
 
 {{ if len $site_types }}

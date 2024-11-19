@@ -1,0 +1,38 @@
+{{- /* */ -}}
+
+{{ $path := default nil }}
+{{ $default := default nil }}
+{{ $result := index site.Params "turing" }}
+
+{{ if reflect.IsSlice . }}
+    {{ $path = index . 0 }}
+    {{ $default = index . 1 }}
+{{ else if reflect.IsMap . }}
+    {{ $path = index . "path" }}
+    {{ $default = index . "default" }}
+{{ else }}
+    {{ $path = . }}
+{{ end }}
+
+{{ range $key := split $path "/" }}
+    {{ $result = $result | default dict }}
+    {{ $result = index $result $key }}
+{{ end }}
+
+{{ if eq $default nil }}
+    {{ $partial := "turing/params" }}
+    {{ if reflect.IsSlice $path }}
+        {{ range $subpath := $path }}
+            {{ $partial = printf "%s/%s" $partial $subpath }}
+        {{ end }} 
+    {{ else }}
+        {{ $partial = printf "%s/%s" $partial $path }} 
+    {{ end }}
+    {{ if templates.Exists (printf "partials/%s.html" $partial) }}
+        {{ $default = partial (printf "%s.html" $partial) }}
+    {{ else if templates.Exists (printf "partials/%s.tmpl" $partial) }}
+        {{ $default = partial (printf "%s.tmpl" $partial) }}
+    {{ end }}
+{{ end }}
+
+{{ return ($result | default $default) }}
