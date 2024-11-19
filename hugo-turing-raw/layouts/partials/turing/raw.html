@@ -1,0 +1,20 @@
+{{- /*
+    @brief Render raw page
+
+    @param context The page to render
+
+    @returns
+        The partial returns rendered element 
+*/ -}}
+
+{{ $context := . }}
+{{ $output := default nil }}
+{{ if $context }}
+    {{ $context = print $context }}
+    {{ $context = strings.Replace $context "{{%" "{{<" }}
+    {{ $context = strings.Replace $context "%}}" ">}}" }}
+    {{ $content = printf `{{<turing/raw>}}%s{{</turing/raw>}}` $context | page.RenderString }}
+    {{ $output = strings.Split $rawContent "\n" }}
+{{ end }}
+
+{{ return $output }}
