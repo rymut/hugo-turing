@@ -13,8 +13,7 @@
     {{ $context = print $context }}
     {{ $context = strings.Replace $context "{{%" "{{<" }}
     {{ $context = strings.Replace $context "%}}" ">}}" }}
-    {{ $content = printf `{{<turing/raw>}}%s{{</turing/raw>}}` $context | page.RenderString }}
-    {{ $output = strings.Split $rawContent "\n" }}
+    {{ $output = printf `{{<turing/raw>}}%s{{</turing/raw>}}` $context | page.RenderString }}
 {{ end }}
 
 {{ return $output }}
