@@ -1,0 +1,9 @@
+{{ $result := default nil }}
+
+{{ $page := page }}
+
+{{ if $page }}
+    {{ $result = (index (complement $page.AlternativeOutputFormats $page.OutputFormats) 0) }} 
+{{ end }}
+
+{{ return $result }}

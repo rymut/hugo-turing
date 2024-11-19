@@ -24,6 +24,28 @@
 
 {{ $prefixes := partial "turing/params" "lookup/prefix" }}
 {{ $suffixes := partial "turing/params" "lookup/suffix" }}
+{{ $output_format := partial "turing/page/output_format" }}
+{{ if $output_format }}
+    {{ $hints := slice }}
+    {{ $name := $output_format.Name }}
+    {{ $extension := $output_format.MediaType.Suffixes }}
+    {{ if $extension }}
+        {{ $extension = index $extension 0 }}
+    {{ end }}
+
+    {{ if $name }}
+        {{ if $extension }}
+            {{ $hints = $hints | append (print $name "." $extension) }}
+        {{ end }}
+        {{ $hints = $hints | append $name }}
+    {{ end }}
+    {{ if $extension }}
+        {{ $hints = $hints | append $extension }}
+    {{ end }}
+    {{ $suffixes = $hints | append $suffixes | uniq }}
+    {{ warnf "%v" $suffixes }}
+{{ end }}
+
 {{ if ne $type nil }}
     {{ $type = print $type "/" }}
 {{ end }}
