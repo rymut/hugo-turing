@@ -1,0 +1,12 @@
+{{- /*
+    @brief Get default name for test
+
+    @returns
+        The partial returns string with name and ordinal position
+*/ -}}
+
+{{ $template := index . 0 }}
+{{ $index := index . 1 }}
+
+{{ $name := printf "%s (test %v)" $template $index }}
+{{ return $name }}

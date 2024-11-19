@@ -1,0 +1,107 @@
+{{/*
+    @brief Parse arguments
+    
+    @context - argument to parse
+
+    @returns
+        map:
+            type: string - boolean|int|float|string|dict|slice|function|shortcode|partial
+            value: raw value (or string for function|shortcode|partial)
+
+    execute
+        suffix "operator"                               "operatorArgs"              "operatorArgsType"
+        (slice "string:operator-name"   
+                                                        (slice  dict/slice/string   "json|func|other"))                          - operator
+                expected                    expecetdType      expectedArgs(only for 'expected' string)       expectedArgsType
+        (slice (dict/slice/string/float/int "json|func|other" (slice dict/slice) "json|func|other")))                                                   - expected
+                template        templateType
+        (slice "template/aaa" shortcode|partial|func)                                                       - test function
+                tempalteArgs                tempalteArgsType
+        (slice (dict/slice params/string) "json|func|partial|other")                                        - test function arguments (optional)
+
+
+partial "execute.html"  (slice "template.html") // no arguments
+partial "execute.html"  (slice (slice "template.html" "shortcode"))
+partial "execute.html"  (slice (dict "path" "template.html" "type" "shortcode"))
+
+OPERATOR:
+    if is_string . 
+        only name passed
+    else if is_dict . 
+        many passed
+    else if is_slice . 
+        many passed
+    end 
+
+EXPECTED:
+    case:
+        is_string .
+            string value
+        is_float .
+            float value
+        is_int .
+            int value
+        is_slice .
+            CAN BE SLICE or set of values
+            SLICE must be passed as `slice $sliceVar`
+        is_dict .
+            CAN BE DICT or set of values
+            DICT must be passed as `dict "value" $dict` or `slice $dict`
+JAK np. expected/ 
+                        (...    (slice ) "raw")
+
+$template := (index . "template")
+*/}}
+
+{{ $context := . }}
+{{ $value := default nil }}
+{{ $type := default nil }}
+
+{{ if reflect.IsSlice $context }}
+    {{ $value = index $context 0 }}
+    {{ $type = index $context 1 }}
+{{ else if reflect.IsMap $context }}
+    {{ $value = index $context "value" }}
+    {{ $type = index $context "type" }}
+{{ else }}
+    {{ $value = $context }}
+{{ end }}
+
+{{ $error := false }}
+{{ if eq $type "boolean" }}
+    {{ if $value }}
+        {{ $value = true }}
+    {{ else }}
+        {{ $value = false }}
+    {{ end }}
+{{ else if eq $type "int" }}
+    {{ $value = int $value }}
+{{ else if eq $type "float" }}
+    {{ $value = float $value }}
+{{ else if or (eq $type "string") (eq $type "function") (eq $type "shortcode") (eq $type "partial") }}
+    {{ $value = print $value }}
+{{ else if eq $type "slice" }}
+    {{ if not reflect.IsSlice $value }}
+        {{ $value = slice $value }}
+    {{ end }}
+{{ else if eq $type "dict" }}
+    {{ if not reflect.IsMap $value }}
+        {{ $error = true }}
+    {{ end }}
+{{ else if eq $type "json" }}
+    {{ if partial "turing/reflect/is_json" $value }}
+        {{ $value = partial "turing/type/json/unmarshal" $value }}
+    {{ else }}
+        {{ $error = true }}
+    {{ end }}
+{{ end }}
+
+{{ if $error }}
+    {{ erroridf "error-turing-invalid-arguments" "Argument '%s' expected but '%#v' passed" $type $value }}
+{{ end }}
+
+{{ if eq $type "function" }}
+    {{ $value = index (apply (slice 0) "newScratch") 0 }}
+{{ end }}
+
+{{ return $value }}

@@ -1,50 +1,64 @@
 {{/*
     @brief Execute templates
     
+    
     @param partial The partial to call during execution stage
     @param arguments The partial arguments (json encoded value)
     @param operator The operator to compare actual result to @p expected and @p options 
     @param expected The expected value (optional for some operatators) 
 */}}
-{{ $partial := .Get "partial" }}
+{{ $name := .Get "name" }}
+{{ $template := .Get "partial" }}
+{{ $templateType := .Get "templateType" | default "partial" }}
 {{ $expected := .Get "expected" }}
-{{ $operator := .Get "operator" }}
+{{ $expecetdType := .Get "expecetdType" }}
+{{ $operator := .Get "operator" | default "eq" }}
 {{ $options := .Get "options" }}
+{{ $optionsType := .Get "optionsType" }}
 {{ $arguments := .Get "arguments" }}
+{{ $argumentsType := .Get "argumentsType" }}
 
 {{/* Get actual value of partial */}}
 {{ $actual := default nil }}
 {{ $called := false }}
 
-{{ $is_string := partial "turing/reflect/is_string" $arguments }}
-
-{{ if partial "turing/reflect/is_json" $arguments }}
-    {{ $arguments = partial "turing/type/json/unmarshal" $arguments }}
+{{ if eq $argumentsType "string" }}
+    {{ $arguments = partial "turing/partial" (slice "test/string-unescape" $arguments) }}
 {{ end }}
+{{ $arguments = partial "turing/partial" (slice "test/arguments" (slice $arguments $argumentsType)) }}
+{{ $expected = partial "turing/partial" (slice "test/arguments" (slice $expected $expecetdType)) }}
 
-{{ $arguments }}
-{{ if templates.Exists (printf "partials/%s.html" $partial) }}
+{{ if templates.Exists (printf "partials/%s.html" $template) }}
     {{ $called = true }}
-    {{ $actual = partial $partial $arguments }}
+    {{ $actual = partial $template $arguments }}
+{{ else if templates.Exists (printf "partials/%s.tmpl" $template) }}
+    {{ $called = true }}
+    {{ warnf "%s" $template }}
+    {{ $actual = partial (printf "%s.tmpl" $template) $arguments }}
 {{ end }}
 
-{{ $expected_is_json := partial "turing/reflect/is_json" $expected }}
-{{ if $expected_is_json }}
-    {{ $expected = partial "turing/type/json/unmarshal" $expected }}
-{{ end }}
 {{ $result := false }}
 {{ if $called }}
     {{ $result = partial  "turing/test/operator" (dict "expr" $operator "actual" $actual "expected" $expected "options" $options) }}
 {{ end }}
 
-
+{{ if or (eq $name nil) (eq $name "") }}
+    {{ $name = partial "turing/partial" (slice "test/name" (slice $template .Ordinal)) }}
+{{ end }}
+<h2>{{ $name }}</h2>
 <ul>
     {{ if not $called }} ☠️ {{ end }}
     {{ if and $called $result }} ✔️ {{ else }} ❌ {{ end }}
-    {{ $expected_is_json }}
-    <li>Partial: {{ $partial }} (found: {{ $called }})</li>
+    {{ $parts := split .Position ":" | last 2 }}
+    {{ $line := index ($parts) 0}}
+    {{ $column := index ($parts) 1}}
+    <li><strong>{{ .Ordinal }} {{  $line }} {{ .Page.File.Path }}:{{ $line }}:{{ $column }} </strong></li>
+    <li><strong>{{ .Page.File.TranslationBaseName  }} </strong></li>
+    <li>Arguments: {{ $arguments }}</li>
+    <li>{{  partial "turing/reflect/is_string" $arguments }}</li>
+    <li>Partial: {{ $template }} (found: {{ $called }})</li>
     <li>Operator: {{ $operator }}</li>
-    <li>Expected: {{ $expected }}</li>
-    <li>Actual: {{ $actual }} </li>
+    <li>Expected: '{{ $expected }}'</li>
+    <li>Actual: '{{ $actual }}' </li>
     <li>Result: {{ $result }}</li>
 </ul>

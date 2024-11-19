@@ -1,0 +1,20 @@
+{{- /* 
+    @brief Unescape shortcode argument
+
+    Shortcode arguments are always escaped for example
+    "\ntest\n" is equal to `\ntest\n` so basicaly "\\ntest\\n"
+
+    @param context The string to unescape
+*/ -}}
+
+{{ $context := . }}
+{{ $result := default nil }}
+
+{{ if partial "turing/reflect/is_string" $context }}
+    {{ $result = partial "turing/type/json/unmarshal" (partial "turing/type/json/remarshal" $context | replaceRE `\\\\` `\`) }}
+{{ else if ne $context nil }}
+    {{ warnidf "warning-turing-invalid-argument" "%s" "Invalid argument in string-unescape" }}
+    {{ $result = $context }}
+{{ end }}
+
+{{ return $result }}
