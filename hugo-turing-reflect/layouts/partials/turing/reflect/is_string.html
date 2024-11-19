@@ -2,6 +2,6 @@
 
 {{ $result := false }}
 {{ if and (ne $value nil) (not (reflect.IsMap $value)) (not (reflect.IsSlice $value)) }}
-    {{ $result = eq $value (string $value) }}
+    {{ $result = eq (printf "%T" $value) "string" }}
 {{ end }}
 {{ return $result }}
