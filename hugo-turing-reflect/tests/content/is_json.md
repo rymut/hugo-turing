@@ -5,10 +5,13 @@ title = 'is_json'
 type = 'test'
 +++
 
-{{< turing/test/execute partial="turing/reflect/is_json" expected=false operator="eq" arguments=`test` argmentsType="string" >}}
-{{< turing/test/execute partial="turing/reflect/is_json" expected=false operator="eq" arguments=`test` argmentsType="string" >}}
-{{< turing/test/execute partial="turing/reflect/is_json" expected=true operator="eq" arguments=`true` >}}
-{{< turing/test/execute partial="turing/reflect/is_json" expected=true operator="eq" arguments=`"false"` argumentsType="string" >}}
+{{< turing/test/execute partial="turing/reflect/is_json" operator="false" arguments=`test` >}}
 
-{{< turing/test/execute partial="turing/reflect/is_json" expected=true operator="eq" arguments=`null` argumentsType="string" >}} 
+{{< turing/test/execute partial="turing/reflect/is_json" operator="false" arguments=`test` >}}
+
+{{< turing/test/execute partial="turing/reflect/is_json" operator="true" arguments=`true` >}}
+
+{{< turing/test/execute partial="turing/reflect/is_json" operator="true" arguments=`"false"` >}}
+
+{{< turing/test/execute partial="turing/reflect/is_json" operator="true" arguments=`null` >}} 
 

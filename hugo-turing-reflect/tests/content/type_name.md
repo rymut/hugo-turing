@@ -7,36 +7,36 @@ type = 'test'
 
 # boolean
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=true operator="eq" expected=`"boolean"` >}}
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=true expected="boolean" >}}
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=false operator="eq" expected=`"boolean"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=false expected="boolean" >}} 
 
 # float
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=10.1 operator="eq" expected=`"float"` >}}
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=10.1 expected="float" >}}
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=.0 operator="eq" expected=`"float"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=.0 expected="float" >}} 
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=0.0 operator="eq" expected=`"float"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=0.0 expected="float" >}} 
 
 # int
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=-10 operator="eq" expected=`"int"` >}}
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=-10 expected="int" >}}
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=0 operator="eq" expected=`"int"` >}}
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=0 expected="int" >}}
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=10 operator="eq" expected=`"int"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=10 expected="int" >}} 
 
 # slice
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=`[]` operator="eq" expected=`"slice"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=`[]` argumentsType="json" expected="slice" >}} 
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=`[{}, {}]` operator="eq" expected=`"slice"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=`[{}, {}]` argumentsType="json" expected="slice" >}} 
 
 # map
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=`{}` operator="eq" expected=`"map"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=`{}` argumentsType="json" expected="map" >}} 
 
-{{< turing/test/execute partial="turing/reflect/type_name" arguments=`{"test":10}` operator="eq" expected=`"map"` >}} 
+{{< turing/test/execute partial="turing/reflect/type_name" arguments=`{"test":10}` argumentsType="json" expected="map" >}} 
 
 
