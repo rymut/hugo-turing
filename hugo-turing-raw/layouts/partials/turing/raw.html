@@ -10,10 +10,33 @@
 {{ $context := . }}
 {{ $output := default nil }}
 {{ if $context }}
+    {{ $open := default nil }}
+    {{ $close := default nil }}
     {{ $context = print $context }}
+    {{ range $value := seq 0 1000 }}
+        {{ $targetOpen := print "[[[" $value }}
+        {{ $targetClose := print $value "]]]" }}
+        {{ if and (not (strings.Contains $context $targetOpen)) (not (strings.Contains $context $targetClose)) }}
+            {{ $open = $targetOpen }}
+            {{ $close = $targetClose }}
+            {{ break }}
+        {{ end }}
+    {{ end }}
+    {{ if or (not $open) (not $close) }}
+        {{ erroridf "error-turing-cannot-find-unique" "cannot find unique replacement"}}
+    {{ end }}
+
+    {{- /* Hugo first renders % % renders markdown we replace those */ -}}
+    {{ $context = strings.Replace $context "{{<" $open }}
+    {{ $context = strings.Replace $context ">}}" $close }}
     {{ $context = strings.Replace $context "{{%" "{{<" }}
     {{ $context = strings.Replace $context "%}}" ">}}" }}
-    {{ $output = printf `{{<turing/raw>}}%s{{</turing/raw>}}` $context | page.RenderString }}
+    {{ $context = printf `{{<turing/raw>}}%s{{</turing/raw>}}` $context | page.RenderString }}
+    {{- /* Now renders < > renders markdown we replace those */ -}}
+    {{ $context = strings.Replace $context $open "{{<" }}
+    {{ $context = strings.Replace $context $close ">}}" }}
+    {{ $context = printf `{{<turing/raw>}}%s{{</turing/raw>}}` $context | page.RenderString }}
+    {{ $output = $context }}
 {{ end }}
 
 {{ return $output }}
