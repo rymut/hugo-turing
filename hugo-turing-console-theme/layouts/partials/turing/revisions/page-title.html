@@ -2,7 +2,7 @@
     {{- if and (eq .Slug "rev-1") (hasSuffix .Path "/latest") -}}
         {{- .Title -}}
     {{- else -}}
-        {{- .Title }} (rev. {{ .Params.revision.id -}})
+        {{- .Title }} (rev. {{ .Params.revision.id }})
     {{- end -}}  
 {{- else -}}
     {{- .Title -}}
