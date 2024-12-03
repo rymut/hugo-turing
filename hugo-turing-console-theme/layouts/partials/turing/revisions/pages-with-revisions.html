@@ -1,0 +1,21 @@
+{{- /*
+    @brief Get page order 
+
+    @param context The page context or nil
+*/ -}}
+{{ $context := . }}
+{{ if eq $context nil }}
+    {{ $context = page }}
+{{ end }}
+{{- $map := dict -}}
+{{- $list := slice -}}
+{{- range $index, $page := $context.Data.Pages -}}
+    {{- if and (eq $page.Kind "section") (eq $page.Type "turing/revisions") -}}
+        {{- $sectionPages := partial "turing/revisions/pages-with-revisions" $page -}}
+        {{ $list = $list | append $sectionPages }}
+    {{- else -}}
+        {{- $list = $list | append $page -}}
+    {{- end -}}
+{{- end -}}
+
+{{ return $list }}

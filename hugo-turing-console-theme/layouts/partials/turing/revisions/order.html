@@ -1,0 +1,26 @@
+{{- /*
+    @brief Get page order 
+
+    @param context The page context or nil
+*/ -}}
+{{ $context := . }}
+{{ if eq $context nil }}
+    {{ $context = page }}
+{{ end }}
+{{- $map := dict -}}
+{{- $list := slice -}}
+{{- range $index, $page := $context.CurrentSection.Data.Pages -}}
+    {{- if and (not $page.Params.private) (ne $page.Params.revision.id nil) -}}
+        {{ $revision := int .Params.revision.id }}
+        {{ $map = merge $map (dict (print $revision) $index) }}
+        {{- $list = $list | append $revision -}}
+    {{- end -}}
+{{- end -}}
+
+{{ $list = collections.Reverse (sort $list) }}
+
+{{ $output := slice }}
+{{ range $index := $list }}
+    {{ $output = $output | append (index $map (print $index)) }}
+{{ end }}
+{{ return $output }}

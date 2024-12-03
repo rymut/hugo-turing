@@ -1,5 +1,6 @@
 go 1.23.2
 
+use ./hugo-turing-console-theme
 use ./hugo-turing-core
 use ./hugo-turing-markdown-theme
 use ./hugo-turing-raw
@@ -10,12 +11,13 @@ use ./hugo-turing-type-html
 use ./hugo-turing-type-json
 
 replace (
-	github.com/rymut/hugo-turing/hugo-turing-core => ./hugo-turing-core
-	github.com/rymut/hugo-turing/hugo-turing-markdown-theme => ./hugo-turing-markdown-theme
-	github.com/rymut/hugo-turing/hugo-turing-raw => ./hugo-turing-raw
-	github.com/rymut/hugo-turing/hugo-turing-reflect => ./hugo-turing-reflect
-	github.com/rymut/hugo-turing/hugo-turing-test => ./hugo-turing-test
-	github.com/rymut/hugo-turing/hugo-turing-test-theme => ./hugo-turing-test-theme
-	github.com/rymut/hugo-turing/hugo-turing-type-json => ./hugo-turing-type-json
-	github.com/rymut/hugo-turing/hugo-turing-type-html => ./hugo-turing-type-html
+	github.com/rymut/hugo-turing/hugo-turing-console-theme v0.0.0 => ./hugo-turing-console-theme
+	github.com/rymut/hugo-turing/hugo-turing-core v0.1.0 => ./hugo-turing-core
+	github.com/rymut/hugo-turing/hugo-turing-markdown-theme v0.1.0 => ./hugo-turing-markdown-theme
+	github.com/rymut/hugo-turing/hugo-turing-raw v0.1.0 => ./hugo-turing-raw
+	github.com/rymut/hugo-turing/hugo-turing-reflect v0.1.0 => ./hugo-turing-reflect
+	github.com/rymut/hugo-turing/hugo-turing-test v0.1.1 => ./hugo-turing-test
+	github.com/rymut/hugo-turing/hugo-turing-test-theme v0.1.0 => ./hugo-turing-test-theme
+	github.com/rymut/hugo-turing/hugo-turing-type-json v0.1.0 => ./hugo-turing-type-json
+	github.com/rymut/hugo-turing/hugo-turing-type-html v0.1.0 => ./hugo-turing-type-html
 )

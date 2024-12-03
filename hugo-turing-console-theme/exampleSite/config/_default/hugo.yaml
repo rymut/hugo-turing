@@ -1,0 +1,14 @@
+############################
+## CHANGE THESE
+############################
+
+baseURL: 'https://example.site'
+title: 'example'
+
+############################
+## MISC
+############################
+
+enableEmoji: true
+languageCode: 'en-us'
+enableRobotsTXT: true

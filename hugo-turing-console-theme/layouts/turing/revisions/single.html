@@ -1,0 +1,57 @@
+{{ define "main" }}
+
+{{ $revisions := partial "turing/revisions/order" . }}
+
+{{ $pageRevisions := partial "turing/revisions/pages-ordered" . }}
+{{ $pageRevisionsCount := len $revisions }}
+
+{{ $head := page.Params.revision.id }}
+{{ $section := page.CurrentSection }}
+<br/>
+{{ $previous := after (sub (len $revisions) $head) $revisions }}
+{{ $count := len $revisions }}
+{{ if lt $head $count }}
+<div class="terminal-alert terminal-alert-error">
+    This is outdated {{ humanize $head }} revision of the the article, latest revision can be found <a href="{{ $section.RelPermalink }}">here</a>
+    {{- if ne $head 1 -}}
+    , if you are looking for previos versions of the article see <a href="#revisions">revisions</a> section.
+    {{- else -}}
+        .
+    {{- end -}}
+</div>
+{{ else if ne $head 1 }}
+<div class="terminal-alert terminal-alert-primary">
+    This is latest {{ humanize $head }} revision of the the article, if you are looking for previos versions of the article see <a href="#revisions">revisions</a> section.
+</div>
+{{ end }}
+
+<h1>{{ .Page.Title }} {{ if $head }}(rev. {{ $head }}){{ end }}</h1>
+
+{{ .Content }}
+
+{{ $revisions = last $head $revisions }}
+{{ if ne (len $revisions) 1 }}
+<section id="revisions">
+    <header><h1>Revisions</h1></header>
+    <div  class="posts-list">
+    {{ range $revision := $revisions }}
+        {{ with index $section.Data.Pages $revision }}
+            {{ if gt .Page.Params.revision.id $head }}
+                {{ continue }}
+            {{ end }}
+
+            {{ if and (not .Params.private) }}
+                <div class="post">
+                    <p>
+                        <div class="date">{{ .PublishDate.Format "Jan. 2, 2006" }}</div>    
+                        <a href="{{ .Permalink }}" title="{{ .Title }}">Revision {{ .Params.revision.id }}</a><br/>
+                        {{ .Params.revision.message | page.RenderString }}
+                    </p>
+                </div>
+            {{ end }}
+        {{ end }}
+    {{ end }}
+    </div>
+</section>
+{{ end }}
+{{ end }}

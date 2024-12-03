@@ -1,0 +1,15 @@
+{{ $context := . }}
+
+{{ range $page := site.Pages }}
+    {{ if eq $page.Path $context.Path }}
+        {{ if not $page.Pages }}
+            {{ .Summary }}
+        {{ else }}
+            {{ range $data := $page.Pages }}
+                {{ $data.Params.revision | jsonify }}<br/>
+            {{ end }}
+        {{ end }}
+        {{ break }}
+    {{ end }}
+{{ end }}
+

@@ -1,0 +1,18 @@
+name = "hugo-turing-console-theme"
+license = "MIT"
+licenselink = "https://github.com/rymut/hugo-turing/hugo-turing-console-theme/blob/master/LICENSE"
+description = "The minimal and responsive Hugo theme inspired by the hugo-console-theme."
+homepage = "https://github.com/rymut/hugo-turing/hugo-turing-console-theme/"
+tags = ["blog", "portfolio", "console", "terminal", "clean", "personal", "minimal", "monotone", "simple", "technical", "responsive", "mobile", "minimalist", "retro"]
+features = ["revisions", "google analytics"]
+min_version = "0.111.0"
+
+[author]
+  name = "Boguslaw Rymut"
+  homepage = "https://rymut.org"
+  github = "https://github.com/rymut"
+
+[original]
+  author = "Jonas D."
+  homepage = "https://terminalcss.xyz/"
+  repo = "https://github.com/Gioni06/terminal.css"

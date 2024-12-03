@@ -1,0 +1,7 @@
+{{ $order := partial "turing/revisions/order" .Page }}<br/>
+{{ if $order }}
+    {{ $head := index $order 0 }}
+    {{ $page := index .Page.CurrentSection.Pages $head }}
+    {{ $page.Summary }}
+{{ end }}
+<!-- more -->

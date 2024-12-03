@@ -1,0 +1,14 @@
+############################
+## Author
+############################
+
+author:
+  name: "console-theme"
+  image: author.png
+  greeting: "A personal blog theme for Hugo :evergreen_tree:"
+  icon: ":wave:"
+
+title: "exmample site"
+description: "This is aa persolan site"
+images:
+  - thumbnail.pngs

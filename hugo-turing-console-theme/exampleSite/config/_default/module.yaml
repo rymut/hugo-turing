@@ -1,0 +1,13 @@
+############################
+## MODULES
+## Add more modules if needed
+## https://gohugo.io/hugo-modules/
+############################
+
+hugoVersion:
+  extended: true
+  min: "0.116.0"
+
+
+imports:
+  - path: "github.com/rymut/hugo-turing/hugo-turing-console-theme"

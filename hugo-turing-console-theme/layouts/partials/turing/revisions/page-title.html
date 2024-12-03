@@ -1,0 +1,9 @@
+{{- if and (eq .Type "turing/revisions") (eq .Kind "page") -}}
+    {{- if and (eq .Slug "rev-1") (hasSuffix .Path "/latest") -}}
+        {{- .Title -}}
+    {{- else -}}
+        {{- .Title }} (rev. {{ .Params.revision.id -}})
+    {{- end -}}  
+{{- else -}}
+    {{- .Title -}}
+{{- end -}}
