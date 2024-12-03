@@ -8,7 +8,7 @@
 {{ $head := page.Params.revision.id }}
 {{ $section := page.CurrentSection }}
 <br/>
-{{ $previous := after (sub (len $revisions) $head) $revisions }}
+{{ $previous := after (math.Max 0 (sub (len $revisions) $head)) $revisions }}
 {{ $count := len $revisions }}
 {{ if lt $head $count }}
 <div class="terminal-alert terminal-alert-error">
