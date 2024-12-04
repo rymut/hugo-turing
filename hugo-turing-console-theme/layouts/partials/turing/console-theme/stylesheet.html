@@ -1,7 +1,8 @@
 {{- $context := . -}}
 {{- $asset := partialCached "turing/console-theme/cdn.html" $context $context -}}
 {{- $resource := default nil -}}
-{{- if not (or (hasPrefix $asset "https://") (hasPrefix $asset "http://")) -}}
+{{- $externalAsset := or (hasPrefix $asset "https://") (hasPrefix $asset "http://") -}}
+{{- if not $externalAsset -}}
     {{- $resource = resources.Get $asset -}}
 {{- end -}}
 {{- if ne $resource nil -}}
@@ -13,5 +14,11 @@
     {{- $resource = $resource | minify | fingerprint -}}
     <link rel="stylesheet" href="{{- $resource.RelPermalink -}}" integrity="{{- $resource.Data.Integrity -}}">
 {{- else -}}
+    {{- if $externalAsset -}}
+        {{- $url := urls.Parse $asset -}}
+        {{- if $url.IsAbs -}}
+            <link rel="preconnect" href="{{ $url.Scheme }}://{{ $url.Host }}" />
+        {{- end -}}
+    {{- end -}}
     <link rel="stylesheet" href="{{- $asset | absURL -}}" />
 {{- end -}}
