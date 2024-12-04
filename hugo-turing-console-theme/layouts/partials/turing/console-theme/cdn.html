@@ -1,0 +1,17 @@
+{{- /*
+    @param context The string of what cdn we want to acquire
+*/ -}}
+{{- $result := slice false false -}}
+{{- $value := index site.Params.turing.theme.console.cdn . -}}
+{{- $partial := (printf "turing/console-theme/cdn/%s.html" .) -}}
+{{- if templates.Exists (print "partials/" $partial) -}}
+    {{- $result = partial $partial . -}}
+{{- end -}}
+{{- if eq $value true -}}
+    {{ $result = index $result 1 }}
+{{- else if $value }}
+    {{- $result = $value -}}
+{{- else -}}
+    {{ $result = index $result 0 }}
+{{- end -}}
+{{- return $result }}

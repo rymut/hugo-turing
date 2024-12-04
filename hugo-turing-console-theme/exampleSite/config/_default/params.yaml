@@ -12,3 +12,9 @@ title: "exmample site"
 description: "This is aa persolan site"
 images:
   - thumbnail.pngs
+
+turing:
+  theme:
+    console:
+      cdn:
+        terminalcss: false

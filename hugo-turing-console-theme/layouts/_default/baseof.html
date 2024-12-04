@@ -22,7 +22,8 @@
       <meta name="robots" content="all,follow">
       <meta name="googlebot" content="index,follow,snippet,archive">
     {{ end }}
-    <link rel="stylesheet" href="{{ "hugo-theme-console/css/terminal-0.7.4.min.css" | absURL }}">
+  
+    <link rel="stylesheet" href="{{ partialCached "turing/console-theme/cdn.html" "terminalcss" "termianlcss" | absURL }}" />
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/animate-4.1.1.min.css" | absURL }}">
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/console.css" | absURL }}">
     {{ `
