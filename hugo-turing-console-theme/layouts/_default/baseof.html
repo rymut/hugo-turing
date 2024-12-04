@@ -22,8 +22,7 @@
       <meta name="robots" content="all,follow">
       <meta name="googlebot" content="index,follow,snippet,archive">
     {{ end }}
-  
-    <link rel="stylesheet" href="{{ partialCached "turing/console-theme/cdn.html" "terminalcss" "termianlcss" | absURL }}" />
+    {{ partialCached "turing/console-theme/stylesheet" "terminalcss" "termianlcss" }}
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/animate-4.1.1.min.css" | absURL }}">
     <link rel="stylesheet" href="{{ "hugo-theme-console/css/console.css" | absURL }}">
     {{ `
@@ -140,7 +139,7 @@ display: var(--display-h1-decoration);
         {{ block "main" . }}
         {{ end }}
       {{ end }}
-        {{ partial "footer.html" . }}
+        {{ partial "turing/console-theme/footer.html" . }}
     </div>
   </body>
 </html>

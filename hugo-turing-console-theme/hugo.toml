@@ -11,4 +11,4 @@
     path = "github.com/Gioni06/terminalcss"
     [[module.imports.mounts]]
       source = "lib/"
-      target = "assets/turing/theme/console/css"
+      target = "assets/turing/console-theme/css/"

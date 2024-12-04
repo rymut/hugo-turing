@@ -23,9 +23,11 @@
 {{- if $partial -}}
     {{- if templates.Exists (print "partials/" $partial) -}}
         {{- $result = trim (partialCached $partial .) "\t\n\v\f\r " -}}
+    {{- else if or (eq $value true) (eq $value false) -}}
+        {{- $result = $asset -}}
     {{- else -}}
         {{- /* WARNING HERE */ -}}
     {{- end -}}
-{{- end -}}   
+{{- end -}}
 
-{{- return $result }}
+{{- return $result -}}

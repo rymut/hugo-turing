@@ -1,0 +1,17 @@
+{{- $context := . -}}
+{{- $asset := partialCached "turing/console-theme/cdn.html" $context $context -}}
+{{- $resource := default nil -}}
+{{- if not (or (hasPrefix $asset "https://") (hasPrefix $asset "http://")) -}}
+    {{- $resource = resources.Get $asset -}}
+{{- end -}}
+{{- if ne $resource nil -}}
+    {{- if eq (print $resource.MediaType) "text/x-scss" -}}
+        {{- $output := replaceRE `(\.scss$)` ".css" $asset -}}
+        {{- $cssOptions := cond (hugo.IsServer) (dict "targetPath" $output "enableSourceMap" true) (dict "targetPath" $output "outputStyle" "compressed") -}}
+        {{- $resource = $resource | toCSS $cssOptions -}}
+    {{- end -}}
+    {{- $resource = $resource | minify | fingerprint -}}
+    <link rel="stylesheet" href="{{- $resource.RelPermalink -}}" integrity="{{- $resource.Data.Integrity -}}">
+{{- else -}}
+    <link rel="stylesheet" href="{{- $asset | absURL -}}" />
+{{- end -}}
