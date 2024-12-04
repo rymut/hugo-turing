@@ -16,5 +16,15 @@ images:
 turing:
   theme:
     console:
+      # define usage of CDN or override resources path's
       cdn:
-        terminalcss: false
+        # By default CDN is disabled to all assets, to enable for all set true
+        # only valid values are true/false any other value will result will be converted to false
+        default: false
+        # Assets can be also override `default` value
+        # Every entry can be boolean or string value
+        assets:
+          # for asset 'terminalcss' set use of CDN (true value), default asset (false value) or custom URL (string value)
+          # when value is set to true partial `turing/console-theme/enabled/{name}.html` will be used
+          # when value is set to false partial `turing/console-theme/disabled/{name}.html` will be used
+          terminalcss: false

@@ -1,17 +1,31 @@
 {{- /*
     @param context The string of what cdn we want to acquire
 */ -}}
-{{- $result := slice false false -}}
-{{- $value := index site.Params.turing.theme.console.cdn . -}}
-{{- $partial := (printf "turing/console-theme/cdn/%s.html" .) -}}
-{{- if templates.Exists (print "partials/" $partial) -}}
-    {{- $result = partial $partial . -}}
+{{- $asset := . -}}
+{{- $result := default nil -}}
+{{- $cdn := default (dict) site.Params.turing.theme.console.cdn -}}
+{{- $value := default false (index $cdn "default") -}}
+{{- if ne $value true -}}
+    {{- if ne $value false -}}
+        {{- /* WARNING HERE */ -}}
+    {{- end -}}
+    {{- $value = false -}}
 {{- end -}}
+{{- $value = default $value (index (default (dict) (index $cdn "assets")) $asset) -}}
+{{- $partial := default nil -}}
 {{- if eq $value true -}}
-    {{ $result = index $result 1 }}
+    {{- $partial = (printf "turing/console-theme/cdn/enabled/%s.html" .) -}}
 {{- else if $value }}
     {{- $result = $value -}}
 {{- else -}}
-    {{ $result = index $result 0 }}
+    {{- $partial = (printf "turing/console-theme/cdn/disabled/%s.html" .) -}}
 {{- end -}}
+{{- if $partial -}}
+    {{- if templates.Exists (print "partials/" $partial) -}}
+        {{- $result = trim (partialCached $partial .) "\t\n\v\f\r " -}}
+    {{- else -}}
+        {{- /* WARNING HERE */ -}}
+    {{- end -}}
+{{- end -}}   
+
 {{- return $result }}
