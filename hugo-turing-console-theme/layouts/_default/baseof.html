@@ -67,81 +67,78 @@ display: var(--display-h1-decoration);
       }
     </style>
 </head>
-<body class="terminal">
-    <div class="container">
-      <div class="terminal-nav">
-          <nav class="terminal-menu">
-            {{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+<body>
+  <div class="content">
+  <div class="container terminal">
+    <div class="terminal-nav">
+      <nav class="terminal-menu">
+        {{ partial "menu.html" (dict "menuID" "main" "page" .) }}
+        <ul vocab="https://schema.org/" style="margin-bottom: var(--global-space);" typeof="BreadcrumbList">
+          <li style="margin-right: auto;"><a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">home</a>/</li>
+          {{ range .Site.Params.navlinks }}
+          <li><a href="{{ absURL .url }}" typeof="ListItem">{{ .name }}</a></li>
+          {{ end }}
+        </ul>
+      </nav>
+    </div>
+    {{ partial "turing/console-theme/banner.html" . }}
 
-            <ul vocab="https://schema.org/" style="margin-bottom: var(--global-space);" typeof="BreadcrumbList">
-                <li style="margin-right: auto;"><a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">home</a>/</li>
-
-                {{ range .Site.Params.navlinks }}
-                <li><a href="{{ absURL .url }}" typeof="ListItem">{{ .name }}</a></li>
+    <div class="terminal-nav">
+      <div class="terminal-prompt" >
+        {{ $url := replaceRE `\.html$` "" .RelPermalink  }}
+        {{ $.Scratch.Add "path" .Site.BaseURL }}
+        <a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>:~$ 
+        {{ $prefix := "cat" }}
+        {{ $suffix := "" }}
+        {{ $elements := split $url "/" }}
+        {{ if eq .Kind "section" -}}
+          {{ if ne .Type "revisions"}}
+            {{ $prefix = "ls -l" }}
+            {{ $suffix = "/" }}
+          {{ else }}
+            {{ $max := 0 }}
+            {{ $slug := default nil }}
+            {{ range page.Data.Pages }}
+              {{ if ne .Params.revision.id nil }}
+                {{ if lt $max .Params.revision.id }}
+                  {{ $max = .Params.revision.id }}
+                  {{ $slug = .Slug }}
                 {{ end }}
-            </ul>
-          </nav>
-        </div>
-        {{ partial "turing/console-theme/banner.html" . }}
-      </div>
-
-
-    <div class="container {{ .Site.Params.animateStyle }}" >
-      <div class="terminal-nav">
-        <div class="terminal-prompt" >
-          {{ $url := replaceRE `\.html$` "" .RelPermalink  }}
-          {{ $.Scratch.Add "path" .Site.BaseURL }}
-          <a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>:~$ 
-          {{ $prefix := "cat" }}
-          {{ $suffix := "" }}
-          {{ $elements := split $url "/" }}
-          {{ if eq .Kind "section" -}}
-            {{ if ne .Type "revisions"}}
-              {{ $prefix = "ls -l" }}
-              {{ $suffix = "/" }}
-            {{ else }}
-              {{ $max := 0 }}
-              {{ $slug := default nil }}
-              {{ range page.Data.Pages }}
-                {{ if ne .Params.revision.id nil }}
-                  {{ if lt $max .Params.revision.id }}
-                    {{ $max = .Params.revision.id }}
-                    {{ $slug = .Slug }}
-                  {{ end }}
-                {{ end }}
-              {{ end }}
-              {{ if ne $slug nil }}
-                {{ $elements = $elements | append $slug }}
               {{ end }}
             {{ end }}
+            {{ if ne $slug nil }}
+              {{ $elements = $elements | append $slug }}
+            {{ end }}
           {{ end }}
-          {{ if eq .Kind "home" }}
-            {{ $prefix }} <a href="{{ .Permalink }}">{{ .Kind }}</a>{{ $suffix }}
-          {{ else }}
-            {{ $prefix }} {{ range $index, $element := $elements -}}
-              {{ $.Scratch.Add "path" $element }}
-                {{- if and (gt $index 1) (lt $index (sub (len $elements) 1)) -}}
-                /
-                {{- end -}}
-                {{- if ne $element "" -}}<a href='{{ $.Scratch.Get "path" | absURL }}'>{{ . }}</a>
-                  {{- $.Scratch.Add "path" "/" -}}
-                {{- end -}}
-            {{ end -}}
-            {{- $suffix }}
-          {{ end }}
-        </div>
-      </div>
-      {{- if and (eq .Kind "section") (eq .Type "turing/revisions") -}}
-        {{ if (ne $revisionsCount 1) }}
-          <p>Page moved: ~{{ .RelPermalink }} -> <a href="{{ $page.Permalink }}">~{{ $page.RelPermalink }}</a>.</p>
+        {{ end }}
+        {{ if eq .Kind "home" }}
+          {{ $prefix }} <a href="{{ .Permalink }}">{{ .Kind }}</a>{{ $suffix }}
         {{ else }}
-          {{ replaceRE `href="(#[^"]*)"` (printf `href="%s$1"` $page.RelPermalink) $page.Content | safeHTML }}
+          {{ $prefix }} {{ range $index, $element := $elements -}}
+            {{ $.Scratch.Add "path" $element }}
+              {{- if and (gt $index 1) (lt $index (sub (len $elements) 1)) -}}
+              /
+              {{- end -}}
+              {{- if ne $element "" -}}<a href='{{ $.Scratch.Get "path" | absURL }}'>{{ . }}</a>
+                {{- $.Scratch.Add "path" "/" -}}
+              {{- end -}}
+          {{ end -}}
+          {{- $suffix }}
         {{ end }}
-      {{ else }}
-        {{ block "main" . }}
-        {{ end }}
-      {{ end }}
-        {{ partial "turing/console-theme/footer.html" . }}
+      </div>
     </div>
-  </body>
+    {{- if and (eq .Kind "section") (eq .Type "turing/revisions") -}}
+      {{ if (ne $revisionsCount 1) }}
+        <p>Page moved: ~{{ .RelPermalink }} -> <a href="{{ $page.Permalink }}">~{{ $page.RelPermalink }}</a>.</p>
+      {{ else }}
+        {{ replaceRE `href="(#[^"]*)"` (printf `href="%s$1"` $page.RelPermalink) $page.Content | safeHTML }}
+      {{ end }}
+    {{ else }}
+      {{ block "main" . }}
+      {{ end }}
+    {{ end }}
+  </div>
+</div>
+  {{ partial "turing/console-theme/footer.html" . }}
+</body>
 </html>

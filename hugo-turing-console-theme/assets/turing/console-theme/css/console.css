@@ -1,3 +1,16 @@
+body {
+    min-height: 100vh;
+    margin-bottom: 0px;
+    display: flex;
+    flex-direction: column;
+}
+footer {
+    flex-shrink: 0;
+}
+
+.content {
+    flex: 1 0 auto;
+}
 :root {
     --global-font-size: 16px;
     --global-font-color: #444;
@@ -42,8 +55,7 @@
 body {
     font-family: var(--font-stack);
     font-size: var(--global-font-size);
-    background-color: #fff;
-    margin-bottom: 75px;
+    background-color: var(--background-color);
 }
 
 .content-column-content p,
