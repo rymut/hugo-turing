@@ -9,7 +9,9 @@
     {{- if eq (print $resource.MediaType) "text/x-scss" -}}
         {{- $output := replaceRE `(\.scss$)` ".css" $asset -}}
         {{- $cssOptions := cond (hugo.IsServer) (dict "targetPath" $output "enableSourceMap" true) (dict "targetPath" $output "outputStyle" "compressed") -}}
-        {{- $resource = $resource | toCSS $cssOptions -}}
+        {{- $resource = $resource |  resources.ExecuteAsTemplate $asset site | toCSS $cssOptions -}}
+    {{- else if eq (print $resource.MediaType) "text/css" -}}
+        {{- $resource = $resource | resources.ExecuteAsTemplate $asset site -}}
     {{- end -}}
     {{- $resource = $resource | minify | fingerprint -}}
     <link rel="stylesheet" href="{{- $resource.RelPermalink -}}" integrity="{{- $resource.Data.Integrity -}}">
