@@ -1,0 +1,11 @@
+{{ $fonts := dict "Regular" 400 "Italic" 400 "Bold" 700 "BoldItalic" 700 }}
+
+{{ range $font, $weight := $fonts }}
+@font-face {
+    font-family: 'Roboto Mono';
+    src: url('{{ (resources.Get (printf "turing/console-theme/font/RobotoMono-%s.ttf" $font)).RelPermalink | absURL }}') format('truetype');
+    font-style: {{ if hasSuffix $font "Italic" }}italic{{ else }}normal{{ end }};
+    font-weight: {{ $weight }};
+    text-rendering: optimizeLegibility;
+}
+{{ end }}

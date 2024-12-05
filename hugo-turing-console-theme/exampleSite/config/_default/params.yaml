@@ -28,3 +28,4 @@ turing:
           # when value is set to true partial `turing/console-theme/enabled/{name}.html` will be used
           # when value is set to false partial `turing/console-theme/disabled/{name}.html` will be used
           terminalcss: false
+          robotomono: false

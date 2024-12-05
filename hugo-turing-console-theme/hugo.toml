@@ -12,3 +12,9 @@
     [[module.imports.mounts]]
       source = "lib/"
       target = "assets/turing/console-theme/css/"
+  [[module.imports]]
+    path = "github.com/googlefonts/RobotoMono"
+    [[module.imports.mounts]]
+      source = "fonts/ttf/"
+      target = "assets/turing/console-theme/font/"
+
