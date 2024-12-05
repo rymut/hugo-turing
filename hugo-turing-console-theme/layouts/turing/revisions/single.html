@@ -1,59 +1,62 @@
 {{ define "main" }}
+    {{ $revisions := partial "turing/revisions/page-revisions" . }}
+    {{ $revisionId := page.Params.revision.id }}
+    {{ $section := page.CurrentSection }}
 
-{{ $revisions := partial "turing/revisions/page-revisions" . }}
-{{ $revisionId := page.Params.revision.id }}
-{{ $section := page.CurrentSection }}
-
-{{ $revisionsCount := len $revisions }}
-
-
-{{ $previous := after (math.Max 0 (sub (len $revisions) $revisionId)) $revisions }}
-{{ $count := len $revisions }}
-{{ if lt $revisionId $count }}
-<div class="terminal-alert terminal-alert-error">
-    This is outdated {{ humanize $revisionId }} revision of the the article, latest revision can be found <a href="{{ $section.RelPermalink }}">here</a>
-    {{- if ne $revisionId 1 -}}
-    , if you are looking for previos versions of the article see <a href="#revisions">revisions</a> section.
-    {{- else -}}
-        .
-    {{- end -}}
-</div>
-{{ else if ne $revisionId 1 }}
-<div class="terminal-alert terminal-alert-primary">
-    This is latest {{ humanize $revisionId }} revision of the the article, if you are looking for previos versions of the article see <a href="#revisions">revisions</a> section.
-</div>
-{{ end }}
-
-<h1>
-    {{- partial "turing/revisions/page-title" .Page -}}
-</h1>
-
-{{ .Content }}
+    {{ $revisionsCount := len $revisions }}
 
 
-{{ $revisions = last $revisionId $revisions }}
-{{ if ne (len $revisions) 1 }}
-<section id="revisions">
-    <header><h1>Revisions</h1></header>
-    <div  class="posts-list">
-    {{ range $revision := $revisions }}
-        {{ with index $section.Data.Pages $revision }}
-            {{ if gt .Page.Params.revision.id $revisionId }}
-                {{ continue }}
-            {{ end }}
+    {{ $previous := after (math.Max 0 (sub (len $revisions) $revisionId)) $revisions }}
+    {{ $count := len $revisions }}
+    {{ if lt $revisionId $count }}
+    <div class="terminal-alert terminal-alert-error">
+        This is outdated {{ humanize $revisionId }} revision of the the article, latest revision can be found <a href="{{ $section.RelPermalink }}">here</a>
+        {{- if ne $revisionId 1 -}}
+        , if you are looking for previos versions of the article see <a href="#revisions">revisions</a> section.
+        {{- else -}}
+            .
+        {{- end -}}
+    </div>
+    {{ else if ne $revisionId 1 }}
+    <div class="terminal-alert terminal-alert-primary">
+        This is latest {{ humanize $revisionId }} revision of the the article, if you are looking for previos versions of the article see <a href="#revisions">revisions</a> section.
+    </div>
+    {{ end }}
 
-            {{ if and (not .Params.private) }}
-                <div class="post">
-                    <p>
-                        <div class="date">{{ .PublishDate.Format "Jan. 2, 2006" }}</div>    
-                        <a href="{{ .Permalink }}" title="{{ .Title }}">Revision {{ .Params.revision.id }}</a><br/>
-                        {{ .Params.revision.message | page.RenderString }}
-                    </p>
-                </div>
+    <main>
+    <h1>
+        {{- partial "turing/revisions/page-title" .Page -}}
+    </h1>
+
+    {{ .Content }}
+
+
+    {{ $revisions = last $revisionId $revisions }}
+    {{ if ne (len $revisions) 1 }}
+    <section id="revisions">
+        <header>
+            <h1>Revisions</h1>
+        </header>
+        <div  class="posts-list">
+        {{ range $revision := $revisions }}
+            {{ with index $section.Data.Pages $revision }}
+                {{ if gt .Page.Params.revision.id $revisionId }}
+                    {{ continue }}
+                {{ end }}
+
+                {{ if and (not .Params.private) }}
+                    <div class="post">
+                        <p>
+                            <div class="date">{{ .PublishDate.Format "Jan. 2, 2006" }}</div>
+                            <a href="{{ .Permalink }}" title="{{ .Title }}">Revision {{ .Params.revision.id }}</a><br/>
+                            {{ .Params.revision.message | page.RenderString }}
+                        </p>
+                    </div>
+                {{ end }}
             {{ end }}
         {{ end }}
+        </div>
+    </section>
     {{ end }}
-    </div>
-</section>
-{{ end }}
+</main>
 {{ end }}
