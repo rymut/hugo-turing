@@ -13,10 +13,12 @@ footer {
 }
 
 span.logo {
+    padding: 0;
     color: var(--primary-color)
 }
 span.logo:hover {
-    text-decoration: underline;;
+    color: var(--invert-font-color);
+    background-color: var(--primary-color);
 }
 .terminal-menu li:first-child {
     margin-right: auto;
