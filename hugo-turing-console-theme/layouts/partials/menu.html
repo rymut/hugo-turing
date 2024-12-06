@@ -1,8 +1,9 @@
 {{- $page := .page }}
 {{- $menuID := .menuID }}
+{{- $classes := .classes }}
 
 {{- with index site.Menus $menuID }}
-  <nav>
+  <nav{{- if $classes }} class="{{ $classes }}"{{ end -}}>
     <ul>
       {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}
     </ul>
@@ -31,7 +32,14 @@
             {{- printf " %s=%q" $k $v | safeHTMLAttr }}
           {{- end }}
         {{- end -}}
-      >{{ $name }}</a>
+      >
+
+      {{- if .Params.logo -}}
+        <span class="logo">{{- site.Title -}}</span>{{ $name -}}
+      {{- else -}}
+        {{- $name -}}
+      {{- end }}
+      </a>
       {{- with .Children }}
         <ul>
           {{- partial "inline/menu/walk.html" (dict "page" $page "menuEntries" .) }}

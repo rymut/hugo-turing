@@ -5,5 +5,5 @@ draft: false
 type: "turing/revisions"
 ---
 
+
 {{ <turing/revisions/latest> }}
-<!-- more -->

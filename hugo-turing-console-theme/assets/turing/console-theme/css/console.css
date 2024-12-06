@@ -11,6 +11,34 @@ footer {
 .content {
     flex: 1 0 auto;
 }
+
+span.logo {
+    color: var(--primary-color)
+}
+span.logo:hover {
+    text-decoration: underline;;
+}
+.terminal-menu li:first-child {
+    margin-right: auto;
+}
+.container, .container-fluid {
+    margin: 0 auto;
+    padding: 0 calc(var(--global-space) * 2 + 2px);
+}
+.terminal-prompt {
+    padding-bottom: calc(var(--global-space) * 0.5);
+    padding-top: calc(var(--global-space) * 0.5);
+}
+.terminal-alert {
+    margin-top: calc(var(--global-space) * 0.5);
+}
+.terminal-alert-primary a::after {
+    vertical-align: super;
+    font-size: 40%;
+    content: "\1F517"
+}
+
+h1::after{content:"=====================================================================================================================";}
 :root {
     --global-font-size: 16px;
     --global-font-color: #444;
@@ -21,7 +49,6 @@ footer {
     --display-h1-decoration: 1;
     --code-bg-color: #fff;
 }
-
 
 @media only screen and (max-width: 850px) {
     :root {

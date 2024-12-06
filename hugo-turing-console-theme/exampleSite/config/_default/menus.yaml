@@ -3,12 +3,17 @@
 ############################
 
 main:
-- name: home/
+- name: ":~"
   url: /
   weight: 10
+  params:
+    logo: true
 - name: features/
   url: /features/
-  weight: 38
+  weight: 20
 - name: about/
   url: /about/
-  weight: 40
+  weight: 15
+- name: github/
+  url: /github/
+  weight: 50

@@ -4,9 +4,10 @@
       <div class="" style="display: table;width:100%">
         {{ $url := replaceRE `\.html$` "" .RelPermalink  }}
         {{ $.Scratch.Add "path" .Site.BaseURL }}
-        <span style="display: table-cell"><a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>:~$ # </span>
+        <span style="display: table-cell"><a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>:~$&nbsp;# </span>
         <span style="display: table-cell; text-align: right;">Powered by <a href="https://gohugo.io/">Hugo</a> with <a href="">Turing Console Theme</a>&nbsp;</span>
         <span class="terminal-prompt" style="display: table-cell; text-align: right; width: 1em">&nbsp;</span></div>
     </div>
+    <br/>
   </div>
 </footer>  
