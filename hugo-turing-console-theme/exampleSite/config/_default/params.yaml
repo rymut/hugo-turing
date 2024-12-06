@@ -14,6 +14,8 @@ images:
   - thumbnail.pngs
 
 turing:
+  redirects:
+    - turing/revisions/site-revision-redirects.html
   theme:
     console:
       # define usage of CDN or override resources path's

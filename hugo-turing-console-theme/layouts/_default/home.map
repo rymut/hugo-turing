@@ -1,0 +1,10 @@
+{{- $tab := "    " -}}
+{{- $siteRedirects := partial "turing/redirects/site-redirects" . -}}
+# 301 redirects
+map $request_uri $new_uri {
+    {{- range $canonical, $aliases := $siteRedirects -}}
+        {{- range $alias := $aliases -}}
+            {{ "\n" }}{{- $tab -}}{{ $alias }} {{ $canonical }};
+        {{- end -}}
+    {{- end }}
+}

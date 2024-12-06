@@ -1,0 +1,29 @@
+{{- $siteRedirects := dict }}
+{{- range $page := site.AllPages -}}
+    {{- if .Aliases -}}
+        {{- $pageRedirects := slice -}}
+        {{- $canonical := .RelPermalink -}}
+        {{- range $alias := .Page.Aliases -}}
+            {{- if not (hasPrefix $alias "/") -}}
+                {{- if not (hasPrefix $alias "..") -}}
+                {{- $alias = print "../" $alias -}}
+                {{- end -}}
+                {{- $alias = urls.JoinPath $canonical $alias -}}
+            {{- end -}}
+            {{ $pageRedirects = $pageRedirects | append (relURL $alias) }}
+        {{- end -}}
+        {{- if $pageRedirects -}}
+            {{- $siteRedirects = $siteRedirects | merge (dict $canonical $pageRedirects) -}}
+        {{- end -}}
+    {{- end -}}
+{{- end -}}
+
+{{ range $redirectPartial := site.Params.turing.redirects }}
+    {{ if templates.Exists (print "partials/" $redirectPartial) }}
+        {{ $list := partial $redirectPartial . }}
+        {{ if $list }} 
+            {{ $siteRedirects = $list }} 
+        {{ end }}
+    {{ end }}
+{{ end }}
+{{- return $siteRedirects -}}

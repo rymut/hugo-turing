@@ -12,3 +12,7 @@ title: 'example'
 enableEmoji: true
 languageCode: 'en-us'
 enableRobotsTXT: true
+
+permalinks:
+  term:
+    tags: /:slug/

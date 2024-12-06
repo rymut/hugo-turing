@@ -1,0 +1,6 @@
+text/htaccess:
+  suffixes:
+    - htaccess
+text/vnd.nginx.redirect-map:
+  suffixes:
+    - map

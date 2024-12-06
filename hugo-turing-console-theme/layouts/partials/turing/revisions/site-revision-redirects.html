@@ -1,0 +1,12 @@
+{{- $siteRedirects := dict }}
+{{- range $page := site.AllPages -}}
+    {{- if and (eq $page.Kind "section") (eq $page.Type "turing/revisions") -}}
+        {{- $sectionPages := partialCached "turing/revisions/pages-with-revisions" $page $page.RelPermalink -}}
+        {{ if gt (len $sectionPages) 1 }}
+            {{- $canonical := (index $sectionPages 0).RelPermalink -}}
+            {{- $siteRedirects = $siteRedirects | merge (dict $canonical (slice $page.RelPermalink)) -}}
+        {{ end }}
+    {{- end -}}
+{{- end -}}
+
+{{ return $siteRedirects }}

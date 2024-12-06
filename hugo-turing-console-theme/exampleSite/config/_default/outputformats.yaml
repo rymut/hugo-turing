@@ -1,0 +1,13 @@
+
+htaccess:
+  basename: ""
+  isPlainText: true
+  mediaType: "text/htaccess"
+humanstxt:
+  baseName: "humans"
+  isPlainText: true
+  mediaType: text/plain
+nginx-redirect-map:
+  baseName: "redirect"
+  isPlainText: true
+  mediaType: text/vnd.nginx.redirect-map
