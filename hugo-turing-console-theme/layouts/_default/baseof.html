@@ -85,43 +85,7 @@ display: var(--display-h1-decoration);
         {{ $url := replaceRE `\.html$` "" .RelPermalink  }}
         {{ $.Scratch.Add "path" .Site.BaseURL }}
         <a href="{{ .Site.BaseURL }}" class="no-style {{ with .Site.Params.TitleCutting }}site-name{{ end }}">{{ .Site.Title }}</a>:~$ 
-        {{ $prefix := "cat" }}
-        {{ $suffix := "" }}
-        {{ $elements := split $url "/" }}
-        {{ if eq .Kind "section" -}}
-          {{ if ne .Type "revisions"}}
-            {{ $prefix = "ls -l" }}
-            {{ $suffix = "/" }}
-          {{ else }}
-            {{ $max := 0 }}
-            {{ $slug := default nil }}
-            {{ range page.Data.Pages }}
-              {{ if ne .Params.revision.id nil }}
-                {{ if lt $max .Params.revision.id }}
-                  {{ $max = .Params.revision.id }}
-                  {{ $slug = .Slug }}
-                {{ end }}
-              {{ end }}
-            {{ end }}
-            {{ if ne $slug nil }}
-              {{ $elements = $elements | append $slug }}
-            {{ end }}
-          {{ end }}
-        {{ end }}
-        {{ if eq .Kind "home" }}
-          {{ $prefix }} <a href="{{ .Permalink }}">{{ .Kind }}</a>{{ $suffix }}
-        {{ else }}
-          {{ $prefix }} {{ range $index, $element := $elements -}}
-            {{ $.Scratch.Add "path" $element }}
-              {{- if and (gt $index 1) (lt $index (sub (len $elements) 1)) -}}
-              /
-              {{- end -}}
-              {{- if ne $element "" -}}<a href='{{ $.Scratch.Get "path" | absURL }}'>{{ . }}</a>
-                {{- $.Scratch.Add "path" "/" -}}
-              {{- end -}}
-          {{ end -}}
-          {{- $suffix }}
-        {{ end }}
+        {{ partial "turing/console-theme/breadcrumb" . }}
       </div>
     </div>
     {{- if and (eq .Kind "section") (eq .Type "turing/revisions") -}}
@@ -131,7 +95,7 @@ display: var(--display-h1-decoration);
         {{ replaceRE `href="(#[^"]*)"` (printf `href="%s$1"` $page.RelPermalink) $page.Content | safeHTML }}
       {{ end }}
     {{ else }}
-      {{ block "main" . }}
+    {{ block "main" . }}
       {{ end }}
     {{ end }}
   </div>

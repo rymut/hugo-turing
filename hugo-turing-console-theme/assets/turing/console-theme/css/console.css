@@ -41,6 +41,25 @@ span.logo:hover {
 }
 
 h1::after{content:"=====================================================================================================================";}
+/* breadcrumbs */
+.terminal-breadcrumbs {
+    display: inline;
+}
+.terminal-breadcrumbs ul, .terminal-breadcrumbs ol {
+    margin: 0;
+    display: inline;
+}
+.terminal-breadcrumbs li {
+    padding: 0;
+    display: inline;
+}
+.terminal-breadcrumbs li::before {
+    content: "/"
+}
+.terminal-breadcrumbs .home::before {
+    content: ""
+}
+/* global settings */
 :root {
     --global-font-size: 16px;
     --global-font-color: #444;

@@ -1,0 +1,25 @@
+{{- $path := "/" -}}
+{{ $prefix := "cat" }}
+{{ if eq .Kind "section" -}}
+  {{ if ne .Type "revisions"}}
+    {{ $prefix = "ls -l" }}
+  {{ end }}
+{{ end }}
+{{$prefix}}<nav aria-label="breadcrumb" class="terminal-breadcrumbs">
+    <ul>
+      {{- range $ancestor := .Ancestors.Reverse -}}
+        {{- $p := $ancestor.RelPermalink -}}
+        {{- if hasPrefix $p $path -}}
+            {{- $p = replace $p $path "" 1 -}}
+        {{- end -}}
+        {{- $p = strings.TrimRight "/" $p -}}
+        {{- $path = print (strings.TrimRight "/" $ancestor.RelPermalink) "/" -}}
+        <li {{- if .IsHome }} class="home"{{end}}><a href="{{- .RelPermalink -}}">{{- if eq $p "" -}}~{{else}}{{- $p -}}{{end}}</a></li>
+      {{- end -}}
+      {{- $p := .RelPermalink -}}
+      {{- $p = replace $p $path "" 1 -}}
+      {{- $p = strings.TrimRight "/" $p -}}
+      <li class="active"><a aria-current="page" href="{{- .RelPermalink -}}">{{ if .IsHome }}home{{ else }}{{- $p -}}{{end}}</a>
+      </li>
+    </ul>
+  </nav>
