@@ -12,7 +12,7 @@
 {{- range $index, $page := $context.Data.Pages -}}
     {{- if and (eq $page.Kind "section") (eq $page.Type "turing/revisions") -}}
         {{- /* recursion here check if it should be expanded */ -}}
-        {{- $sectionPages := partial "turing/revisions/pages-with-revisions" $page -}}
+        {{- $sectionPages := partialCached "turing/revisions/pages-with-revisions" $page $page.RelPermalink -}}
         {{ $list = $list | append $sectionPages }}
     {{- else -}}
         {{- $list = $list | append $page -}}
