@@ -11,6 +11,7 @@
 {{- $list := slice -}}
 {{- range $index, $page := $context.Data.Pages -}}
     {{- if and (eq $page.Kind "section") (eq $page.Type "turing/revisions") -}}
+        {{- /* recursion here check if it should be expanded */ -}}
         {{- $sectionPages := partial "turing/revisions/pages-with-revisions" $page -}}
         {{ $list = $list | append $sectionPages }}
     {{- else -}}

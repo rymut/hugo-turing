@@ -39,7 +39,7 @@
         </header>
         <div  class="posts-list">
         {{ range $revision := $revisions }}
-            {{ with index $section.Data.Pages $revision }}
+            {{ with index $section.Data.Pages $revisionId }}
                 {{ if gt .Page.Params.revision.id $revisionId }}
                     {{ continue }}
                 {{ end }}

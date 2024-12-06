@@ -1,26 +1,17 @@
 ---
-title: 'Revisions'
-slug: "rev-2"
-date: 2023-01-01T08:30:00-07:00
+title: 'Syntax heighlight chroma support'
+date: 2024-12-04T09:00:00-00:00
 draft: false
-aliases:
-- "./latest"
-type: "turing/revisions"
-params:
-    revision:
-        id: 2
-        message: last change
+summary: |
+  Example of using code heighlight in this theme.
 ---
-
-This is simple article 
 
 <!--more-->
 
-# This is being used here
+# Out of box support for Hugo Chroma Heighlight
 
 
-## this is h2 
-
+## Support for inline line numebers
 
 ```go {linenos=inline,hl_lines=[5,"15-17"],linenostart=94}
 // GetTitleFunc returns a func that can be used to transform a string to
@@ -45,10 +36,9 @@ func GetTitleFunc(style string) func(s string) string {
 }
 ```
 
+## Support for table line numebers
 
 ```go {linenos=table,hl_lines=[5,"15-17"],linenostart=94}
-{
-}
 // GetTitleFunc returns a func that can be used to transform a string to
 // title case.
 //
