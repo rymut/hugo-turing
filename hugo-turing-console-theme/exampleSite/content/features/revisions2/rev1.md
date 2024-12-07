@@ -8,6 +8,9 @@ params:
     revision:
         id: 1
         message: last change
+tags:
+    - feature
+    - revisions
 ---
 
 This is simple article 

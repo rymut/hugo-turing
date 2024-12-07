@@ -1,3 +1,4 @@
 page:
   features: /:sections/:month-:slug/
-  
+term:
+  tags: /:section/:slug

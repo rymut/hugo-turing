@@ -4,6 +4,9 @@ date: 2024-12-04T09:00:00-00:00
 draft: false
 summary: |
   Example of using code heighlight in this theme.
+tags:
+    - feature
+    - heightlight
 ---
 
 <!--more-->

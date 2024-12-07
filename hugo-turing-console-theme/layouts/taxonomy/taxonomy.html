@@ -1,0 +1,33 @@
+{{ define "main" }}
+    <h1>{{ .Page.Title }}</h1>
+    {{ .Content }}
+    <div class="posts-list">
+        {{ if .Data.Terms }}
+            {{ range .Data.Terms.ByCount }}
+                    <div class="post">
+                        <p>
+                            <div class="date">Size: {{ .Count }}</div>
+                            <h1><a href="{{ .Page.Permalink }}" title="{{ .Page.LinkTitle }}">{{ .Name }}</a></h1>
+                        </p>
+                    </div>
+            {{ end }}
+        {{ else }}
+            {{ $pages := .Pages }}
+            {{ range sort $pages "Date" "desc" }}
+                {{ if not .Params.private }}
+                    <div class="post">
+                        <p>
+                            <div class="date">{{ .PublishDate.Format "Jan. 2, 2006" }}</div>    
+                            <h1><a href="{{ .Permalink }}" title="{{ partial "turing/revisions/page-title" . }}">{{ partial "turing/revisions/page-title" . }}</a></h1>
+                            {{ .Summary }}
+                            {{ if .Truncated }}
+                                <a href="{{ .RelPermalink }}">Read more...</a>
+                            {{ end }}
+                        </p>
+                    </div>
+                {{ end }}
+            {{ end }}
+        {{ end }}
+    </div>
+
+{{ end }}
