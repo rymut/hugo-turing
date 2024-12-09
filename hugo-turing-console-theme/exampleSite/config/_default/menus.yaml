@@ -17,3 +17,25 @@ main:
 - name: github/
   url: /github/
   weight: 50
+
+second:
+  - name: Products
+    pageRef: /products
+    weight: 10
+  - name: Hardware
+    pageRef: /products/hardware
+    parent: Products
+    weight: 1
+  - name: Software
+    pageRef: /products/software
+    parent: Products
+    weight: 2
+  - name: Services
+    pageRef: /services
+    weight: 20
+  - name: Hugo
+    params:
+      rel: external
+    pre: <i class="fa fa-heart"></i>
+    url: https://gohugo.io/
+    weight: 30

@@ -1,0 +1,10 @@
+{{- $menus := dict -}}
+{{- range $key, $items := site.Menus -}}
+  {{- $menu := slice -}}
+    {{- range $item := $items -}}
+      {{- $item := dict "identifier" $item.Identifier "name" $item.Name "params" $item.Params "parent" $item.Parent "post" $item.Post "pre" $item.Pre "title" $item.Title "weight" $item.Weight -}} 
+      {{- $menu = $menu | append $item -}}
+    {{- end -}}
+    {{- $menus = $menus | merge (dict $key $menu) -}}
+{{- end -}}
+{{- $menus | transform.Remarshal "yaml" -}}
