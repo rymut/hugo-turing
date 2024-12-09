@@ -1,0 +1,16 @@
+{{ define "main" }}
+  {{ $pages := where site.RegularPages "Type" .Params.archive.type }}
+  {{ $groups := $pages.GroupByDate .Params.archive.groupbydate }}
+  {{ $group := index $groups .Params.archive.index }}
+  {{ $group = slice $group }}  
+  {{ $paginator := .Paginate $group }}
+  {{ $paginator }}
+  {{ range $paginator.PageGroups }}
+    <h2>{{ .Key }}</h2>
+    {{ range .Pages }}
+      <h3><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h3>
+    {{ end }}
+  {{ end }}
+
+  {{ template "_internal/pagination.html" (dict "page" .) }}
+{{ end }}

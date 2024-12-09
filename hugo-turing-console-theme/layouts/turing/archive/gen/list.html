@@ -1,0 +1,85 @@
+{{ define "main" }}
+  {{- $generateArchive := true -}}
+
+  {{- /* Generate menu */ -}}
+  {{ with resources.Get "turing/archive/menus.yaml" }}
+    {{ with resources.ExecuteAsTemplate "config/_default/menus.yaml" site . }}
+      {{ .Publish }}
+    {{ end }}
+  {{ end }}
+
+  {{- /* Generate pages */ -}}
+  {{ $listResource := resources.Get "turing/archive/section.md" }}
+  {{ $termResource := resources.Get "turing/archive/term.md" }}
+
+  {{ $groupbydate := page.Params.groupbydate }}
+  {{ $type := "posts" }}
+  {{ $pages := where site.RegularPages "Type" "posts" }}
+  {{ range $index, $groupPages := $pages.GroupByDate "2006 01" }}  
+    {{ if not .Pages }}
+      {{ continue }}
+    {{ end }}
+    {{ $archiveDate := time.Format "2006/01" (index .Pages 0).PublishDate }}
+    {{ $sectionPath := print "archives/" $archiveDate "/_index.md" }}
+    {{ $archiveParams := dict "archive" (dict "type" $type "groupbydate" $groupbydate "index" $index) }}
+    {{ $frontMatter := dict "title" "archives" "date" time.Now "draft" false "params" $archiveParams "type" "turing/archive" }}
+      {{ with resources.ExecuteAsTemplate $sectionPath $frontMatter $listResource }}
+      {{ .Publish }}
+    {{ end }}
+    <p>{{ .Key }}</p>
+    <ul>
+      
+      {{ range .Pages }}
+        <li>{{ $index }} </li>
+      
+      {{ end }}
+    </ul>
+  {{ end }}
+
+
+{{ $pages := site.RegularPages }}
+{{ $paginator := .Paginate $pages }}
+
+    <h2>Dependencies</h2>
+<table class="table table-dark">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Owner</th>
+      <th scope="col">Path</th>
+      <th scope="col">Version</th>
+      <th scope="col">Time</th>
+      <th scope="col">Vendor</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range $index, $element := hugo.Deps }}
+    <tr>
+      <th scope="row">{{ add $index 1 }}</th>
+      <td>{{ with $element.Owner }}{{ .Path }}{{ end }}</td>
+      <td>
+        {{ $element.Path }}
+        {{ with $element.Replace }}
+        => {{ .Path }}
+        {{ end }}
+      </td>
+      <td>{{ $element.Version }}</td>
+      <td>{{ with $element.Time }}{{ . }}{{ end }}</td>
+      <td>{{ $element.Vendor }}</td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+    TEST
+    {{ range $paginator.Pages }}
+        <h2><a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a></h2>
+    {{ end }}
+    END
+    {{ with $paginator }}
+    <ul>
+        {{ range .Pagers }}
+            <li><a href="{{ .URL }}">{{ .PageNumber }}</a></li>
+        {{ end }}
+    </ul>
+    {{ end }}
+{{ end }}
