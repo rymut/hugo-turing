@@ -1,0 +1,53 @@
+{{- /*
+    @brief Get config files for module
+
+    @param context The module name, empty or nil assume self
+    @return
+        slice containing configuration paths
+*/ -}}
+
+{{- $dependencyName := . -}}
+{{- $hugoDependency := where hugo.Deps "Path" $dependencyName -}}
+{{ if $hugoDependency }}
+    {{ $hugoDependency = index $hugoDependency 0 }}
+{{ end }}
+
+{{ $workspaceModules := partialCached "turing/ufs/module/workspace" . }}
+{{ $hugoDependencyPath := default nil }}
+{{ if $hugoDependency }}
+    {{ $hugoDependencyPath = $hugoDependency.Path }}
+    {{ with $hugoDependency.Replace }}
+        {{ $hugoDependencyPath = .Path }}
+    {{ end }}
+    {{- range $letter := split "ABCDEFGHIJKLMNOPQRSTUVWXYZ" "" }}
+      {{- $hugoDependencyPath = replace $hugoDependencyPath $letter (print "!" (lower $letter)) }}
+    {{- end }}
+    {{- if $hugoDependency.Version }}
+        {{- $hugoDependencyPath = print $hugoDependencyPath "@" $hugoDependency.Version }}
+    {{- end }}
+
+    {{ $workspaceModule := index $workspaceModules $dependencyName }}
+    {{ if $hugoDependency.Vendor }}
+        {{ $vendorPath := partialCached "turing/ufs/path/vendor.html" . }}
+        {{ $vendorPath = replace $vendorPath `\` `/` }}
+        {{ $vendorPath = strings.TrimRight "/" $vendorPath }}
+        {{ $hugoDependencyPath = print $vendorPath "/" $hugoDependencyPath }}
+    {{ else if $workspaceModule }}
+        {{ $workspacePath := partialCached "turing/ufs/path/workspace" . }}
+        {{ $workspacePath = replace $workspacePath `\` `/` }}
+        {{ $workspacePath = strings.TrimRight "/" $workspacePath }}
+        {{ $hugoDependencyPath = print $workspacePath "/" $workspaceModule }}
+    {{ else }}
+        {{ $cachePath := partialCached "turing/ufs/path/cache" . }}
+        {{ $cachePath = replace $cachePath `\` `/` }}
+        {{ $cachePath = strings.TrimRight "/" $cachePath  }}
+        {{ $hugoDependencyPath = print $cachePath "/" $hugoDependencyPath }}
+    {{ end }}
+    {{ if not (os.FileExists $hugoDependencyPath) }}
+        {{ $hugoDependencyPath = default nil }}
+    {{ end }}
+{{ else if or (not $dependencyName) (eq $dependencyName ".") }}
+    {{ $hugoDependencyPath = "." }}
+{{ end }}
+
+{{ return $hugoDependencyPath }}

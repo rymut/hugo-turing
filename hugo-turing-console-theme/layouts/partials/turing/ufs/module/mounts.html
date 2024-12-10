@@ -1,0 +1,44 @@
+{{- /* 
+    @brief Get imports from module
+    
+    @param context The module in question
+
+    @returns
+        The slice containing object with mounts list [{ source: '...', target: '...' }] }
+*/ -}}
+
+{{ $moduleName := . }}
+
+{{ $owners := slice }}
+{{ range $hugoDependency := where hugo.Deps "Path" $moduleName }}
+    {{ if $hugoDependency.Owner }} 
+        {{ $owners = $owners | append $hugoDependency.Owner.Path }}
+    {{ else }}
+        {{ $owners = $owners | append "." }}
+    {{ end }}
+{{ end }}
+
+{{- /* Sanity sake add current exampleSite module */ -}}
+{{ $owners = $owners | append "." }}
+
+{{ $configs := slice }}
+{{ range $owner := $owners }}
+    {{ $ownerConfigsPaths := partialCached "turing/ufs/module/configs.html" $owner $owner }}
+    {{ $configs = $configs | append $ownerConfigsPaths }}
+{{ end }}
+
+{{ $mounts := slice }}
+{{ range $configFilePath := $configs }}
+    {{- $module := os.ReadFile $configFilePath | resources.FromString $configFilePath | transform.Unmarshal }}
+    {{ if not (strings.Contains $configFilePath "/module.") }}
+        {{ $module = default (dict) (index $module "module") }}
+    {{ end }}
+    {{ $imports := default (dict) (index $module "imports") }}
+    {{ range where $imports "path" $moduleName }}
+        {{ with index . "mounts" }}
+            {{ $mounts = $mounts | append . }}
+        {{ end }}
+    {{ end }} 
+{{ end }}
+
+{{ return $mounts }}

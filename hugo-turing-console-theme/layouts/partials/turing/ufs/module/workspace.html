@@ -1,0 +1,12 @@
+{{ $hugoModuleWorkspace := os.Getenv "HUGO_MODULE_WORKSPACE" }}
+{{ $workspacePath := partialCached "turing/ufs/path/workspace" . }}
+{{ $modules := dict }}
+{{ if ne $hugoModuleWorkspace "" }}
+  {{ $baseName := (path.Split $hugoModuleWorkspace).File }}
+  {{ $contents := os.ReadFile (print $workspacePath "/" $baseName) }}
+  {{ range $match := findRESubmatch `(?:replace)?\s*(?<module>[^\s]*)\s+(?<version>v[^\s]*)\s+=>\s+(?<path>[^\s]*)` $contents }}
+    {{ $modules = $modules | merge (dict (index $match 1) (index $match 3)) }}
+  {{ end }}
+{{ end }}
+
+{{ return $modules }}

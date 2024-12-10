@@ -1,0 +1,55 @@
+{{- /*
+    @brief List config files used by module
+
+    @param context The module name
+    @returns
+        Slice containing configuration file paths
+*/ -}}
+
+{{ $moduleName := . }}
+
+{{- $moduleConfigPaths := slice }}
+
+{{- /* read config file or main config */ -}}
+{{- $suffixes := slice "yaml" "toml" "json" -}}
+{{- $configBaseNames := slice "hugo" "config" -}}
+{{- $configSectionBaseNames := slice "module" -}}
+{{- $configEnviroments := slice "_default" hugo.Environment }}
+
+{{- $modulePath := partialCached "turing/ufs/module/path" $moduleName $moduleName }}
+
+{{ if $modulePath }}
+    {{- range $baseName := $configBaseNames }}
+        {{- $configFile := default nil }}
+        {{- range $suffix := $suffixes }}
+            {{- $fileName := print $modulePath "/" $baseName "." $suffix }}
+            {{- if os.FileExists $fileName }}
+                {{- $configFile = $fileName }}
+                {{- break }}
+            {{- end }}
+        {{- end }}
+        {{- if $configFile }}
+            {{- $moduleConfigPaths = $moduleConfigPaths | append $configFile  }}
+            {{- break }}
+        {{- end }}
+    {{- end }}
+
+    {{- range $configEnviroment := $configEnviroments }}
+    {{- range $configSectionBaseName := $configSectionBaseNames }}
+        {{- $configFile := default nil }}
+        {{- range $suffix := $suffixes }}
+        {{ $fileName := print $modulePath "/config/" $configEnviroment "/" $configSectionBaseName "." $suffix }}
+        {{- if os.FileExists $fileName }}
+            {{- $configFile = $fileName }}
+            {{- break }}
+        {{- end }}
+        {{ end }}
+        {{ if $configFile }}
+            {{- $moduleConfigPaths = $moduleConfigPaths | append $configFile  }}
+            {{- break }}
+        {{ end }}
+    {{- end }}
+    {{- end }}
+{{ end }}
+
+{{ return $moduleConfigPaths }}
