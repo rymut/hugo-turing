@@ -1,0 +1,36 @@
+{{- /*
+    @brief Check if file Exists
+
+    @param context the path of File
+
+    @returns
+        true if file exists false otherwise
+*/ -}}
+
+{{ $filePath := strings.TrimRight "/" . }}
+{{ $fileExists := false }}
+{{ range $hugoDependency := hugo.Deps }}
+    {{ $modulePath := partialCached "turing/ufs/module/path.html" $hugoDependency.Path $hugoDependency.Path }}
+    {{ $mounts := partialCached "turing/ufs/module/mounts.html" $hugoDependency.Path $hugoDependency.Path }}
+    {{ if not $mounts }} 
+        {{- /* TODO */ -}} 
+    {{ end }}
+    {{ range $mount := $mounts }}
+        {{ if $mount }}
+            {{ $source := print (strings.TrimRight "/" $mount.source) "/" }}
+            {{ $target := print (strings.TrimRight "/" $mount.target) "/" }}
+            {{ if hasPrefix $filePath $target }}
+                {{ $realPath := print $modulePath "/" $source "/" (replace $filePath $target "" 1)}}
+                {{ if os.FileExists $realPath }}
+                    {{ $fileExists = true }}
+                {{ end }}
+            {{ else if eq $filePath $target }}
+                {{- /* TODO */ -}}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+    {{ if $fileExists }}
+        {{ break }}
+    {{ end }}
+{{ end }}
+{{ $fileExists  }}
