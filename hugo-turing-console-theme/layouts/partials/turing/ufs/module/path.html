@@ -4,6 +4,7 @@
     @param context The module name, empty or nil assume self
     @return
         slice containing configuration paths
+        path will not contain '/' as last character
 */ -}}
 
 {{- $dependencyName := . -}}
@@ -50,4 +51,7 @@
     {{ $hugoDependencyPath = "." }}
 {{ end }}
 
+{{ if $hugoDependencyPath }}
+    {{ $hugoDependencyPath = path.Clean $hugoDependencyPath }}
+{{ end }}
 {{ return $hugoDependencyPath }}

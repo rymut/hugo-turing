@@ -1,0 +1,34 @@
+{{- /* Return real modules mount (in cache) */ -}}
+
+{{- /*
+    @brief Get module munts
+
+    @param context The module name
+
+    @returns
+        The slice of { source: '...', target: '...'} where
+            - source exists and is prefixed by module path (in _vendor/deps cache/deps workspace)
+            - source and target will not contain / as last character
+*/ -}}
+
+{{ $hugoDependency := . }}
+{{ $moduleMounts := slice }}
+
+{{ $modulePath := partialCached "turing/ufs/module/path.html" $hugoDependency $hugoDependency }}
+{{ if $modulePath }}
+    {{ $mounts := partialCached "turing/ufs/module/mounts.html" $hugoDependency $hugoDependency }}
+    {{ if not $mounts }}
+        {{ $mounts = partialCached "turing/ufs/module/default_mounts.html" . }}
+    {{ end }}
+    {{ range $mount := $mounts }}
+        {{ if $mount }}
+            {{ $source := print $modulePath "/" (strings.TrimRight "/" $mount.source) "/" }}
+            {{ $target := print (strings.TrimRight "/" $mount.target) "/" }}
+            {{ if os.FileExists $source }}
+                {{ $moduleMounts = $moduleMounts | append (dict "source" $source "target" $target) }}
+            {{ end }}
+        {{ end }}
+    {{ end }}
+{{ end }}
+
+{{ return $moduleMounts  }}

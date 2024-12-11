@@ -8,24 +8,30 @@
 */ -}}
 
 {{ $filePath := strings.TrimRight "/" . }}
+{{ $filePath = replaceRE `^(\.*/)*` "" $filePath }}
 {{ $fileExists := false }}
+{{ $hugoDependencies := slice "." }}
 {{ range $hugoDependency := hugo.Deps }}
-    {{ $modulePath := partialCached "turing/ufs/module/path.html" $hugoDependency.Path $hugoDependency.Path }}
-    {{ $mounts := partialCached "turing/ufs/module/mounts.html" $hugoDependency.Path $hugoDependency.Path }}
-    {{ if not $mounts }} 
-        {{- /* TODO */ -}} 
-    {{ end }}
+    {{ $hugoDependencies = $hugoDependencies | append $hugoDependency.Path }}
+{{ end }}
+{{ $hugoDependencies = uniq $hugoDependencies }}
+
+{{ range $hugoDependency := $hugoDependencies }}
+    {{ $mounts := partialCached "turing/ufs/module/mounts_path.html" $hugoDependency $hugoDependency }}
     {{ range $mount := $mounts }}
         {{ if $mount }}
             {{ $source := print (strings.TrimRight "/" $mount.source) "/" }}
             {{ $target := print (strings.TrimRight "/" $mount.target) "/" }}
             {{ if hasPrefix $filePath $target }}
-                {{ $realPath := print $modulePath "/" $source "/" (replace $filePath $target "" 1)}}
+                {{ $realPath := print $source "/" (replace $filePath $target "" 1)}}
                 {{ if os.FileExists $realPath }}
                     {{ $fileExists = true }}
                 {{ end }}
             {{ else if eq $filePath $target }}
-                {{- /* TODO */ -}}
+                {{ $realPath := print $source }}
+                {{ if os.FileExists $realPath }}
+                    {{ $fileExists = true }}
+                {{- end -}}
             {{ end }}
         {{ end }}
     {{ end }}
@@ -33,4 +39,4 @@
         {{ break }}
     {{ end }}
 {{ end }}
-{{ $fileExists  }}
+{{ return $fileExists  }}

@@ -1,0 +1,5 @@
+{{ $defaultMounts := slice }}
+{{ range $name := slice "content" "static" "layouts" "data" "assets" "i18n" "archetypes" }}
+    {{ $defaultMounts = $defaultMounts | append (dict "source" $name "target" $name) }}
+{{ end }}
+{{ return $defaultMounts }}
