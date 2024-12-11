@@ -22,11 +22,18 @@
     {{ end }}
     {{ range $mount := $mounts }}
         {{ if $mount }}
-            {{ $source := print $modulePath "/" (strings.TrimRight "/" $mount.source) "/" }}
-            {{ $target := print (strings.TrimRight "/" $mount.target) "/" }}
-            {{ if os.FileExists $source }}
-                {{ $moduleMounts = $moduleMounts | append (dict "source" $source "target" $target) }}
+            {{ $source := print $modulePath "/" (strings.TrimRight "/" $mount.source) }}
+            {{ $target := print (strings.TrimRight "/" $mount.target) }}
+            {{ $sourceIsDir := false }}
+            {{ if not (os.FileExists $source) }}
+                {{ continue }}
             {{ end }}
+            {{ $sourceStat := os.Stat $source }}
+            {{ if $sourceStat.IsDir }}
+                {{ $source = print $source "/" }}
+                {{ $target = print $target "/" }}
+            {{ end }}
+            {{ $moduleMounts = $moduleMounts | append (dict "source" $source "target" $target) }}
         {{ end }}
     {{ end }}
 {{ end }}
