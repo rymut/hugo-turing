@@ -1,4 +1,22 @@
 {{ define "main" }}
+
+  {{ $result := default nil }}
+  {{ if $result }}
+      <hr/>
+    {{ $path := index $result "Path" }}
+    {{ $templateString := os.ReadFile $path }}
+      {{ $resPath := print .RelPermalink "/index.html" }}
+    {{ $templateString = print `{{ template "main" . }}` $templateString  }}
+    {{ with $templateResource := resources.FromString "" $templateString }}
+      {{ with resources.ExecuteAsTemplate $resPath page $templateResource }}
+        {{ .Content | safeHTML}}
+      {{ end }}
+    {{ end }}
+        <hr/>
+  {{ end }}
+
+
+{{ templates.Exists "_default/list.html" }}
   {{- $generateArchive := true -}}
 
   {{- /* Generate menu */ -}}
@@ -39,6 +57,16 @@
 
 {{ $pages := site.RegularPages }}
 {{ $paginator := .Paginate $pages }}
+<hr/> 
+
+<hr/> 
+{{ range os.ReadDir "config/_default" }}
+    {{ .Name }} <br/>
+{{ end }}
+<hr/> 
+{{ partial "turing/ufs/read_dir.html" "layouts/partials/turing" }}
+<hr/>
+{{ partial "turing/ufs/read_dir.html" "assets/turing/console-theme/font" }}
 
     <h2>Dependencies</h2>
 <table class="table table-dark">
@@ -48,11 +76,26 @@
       <th scope="col">Owner</th>
       <th scope="col">Path</th>
       <th scope="col">Version</th>
-      <th scope="col">Time</th>
+      <th scope="col">owners</th>
       <th scope="col">Vendor</th>
+      <th scope="col">Path</th>
+      <th scope="col">Configs</th>
     </tr>
   </thead>
   <tbody>
+    <tr>
+      <th scope="row">self</th>
+      <td>N/A</td>
+      <td>
+        {{ hugo.WorkingDir }}
+      </td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>N/A</td>
+      <td>{{ partial "turing/ufs/module/path.html" "." }}</td>
+      <td>{{ partial "turing/ufs/module/configs.html" "." }}</td>
+    
+    </tr>
     {{ range $index, $element := hugo.Deps }}
     <tr>
       <th scope="row">{{ add $index 1 }}</th>
@@ -64,8 +107,11 @@
         {{ end }}
       </td>
       <td>{{ $element.Version }}</td>
-      <td>{{ with $element.Time }}{{ . }}{{ end }}</td>
+      <td>
+      </td>
       <td>{{ $element.Vendor }}</td>
+      <td>{{ partial "turing/ufs/module/path.html" $element.Path }}</td>
+      <td>{{ partial "turing/ufs/module/configs.html" $element.Path }}</td>
     </tr>
     {{ end }}
   </tbody>

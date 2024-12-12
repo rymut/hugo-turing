@@ -1,0 +1,20 @@
+[hugoVersion]
+    extended = false
+    min = "0.116.0"
+
+[[imports]]
+    path = "github.com/rymut/hugo-turing/hugo-turing-markdown-theme"
+[[imports]]
+    path = "github.com/rymut/hugo-turing/hugo-turing-ufs"
+[[imports]]
+    path = "github.com/mrmierzejewski/hugo-theme-console"
+[[imports]]
+    path = "github.com/Gioni06/terminalcss"
+    [[imports.mounts]]
+        source = "lib/"
+        target = "assets/turing/console-theme/css/"
+[[imports]]
+    path = "github.com/googlefonts/RobotoMono"
+    [[imports.mounts]]
+        source = "fonts/ttf/"
+        target = "assets/turing/console-theme/font/"

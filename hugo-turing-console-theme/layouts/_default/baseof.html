@@ -7,14 +7,15 @@
 <!DOCTYPE html>
 <html lang="{{ .Site.LanguageCode }}">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>{{ .Site.Title }}{{ $url := urls.Parse .Page.Permalink }}{{ $url.Path }}</title>
     {{ with .Site.Params.description }}<meta name="description" content="{{ . }}">{{ end }}
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content="Hugo {{ hugo.Version }}" />
     {{- if and (eq .Kind "section") (eq .Type "turing/revisions") -}}
-      <meta name="robots" content="noindex">
-      <link rel="canonical" href="{{ $page.Permalink  }}">
+      <meta name="robots" content="noindex" />
+      <link rel="canonical" href="{{ $page.Permalink  }}" />
       {{ if (ne $revisionsCount 1) }}
       <meta http-equiv="refresh" content="30; url={{ $page.Permalink }}">
       {{ end }}
