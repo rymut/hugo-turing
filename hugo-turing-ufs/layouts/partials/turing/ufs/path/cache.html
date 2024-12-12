@@ -1,1 +1,22 @@
-_deps/cache
+{{ $hugoCachedir := os.Getenv "HUGO_CACHEDIR" }}
+{{ $fallback := "_deps/cache" }}
+{{ if $hugoCachedir }}
+    {{ $hugoWorkingDir := replace hugo.WorkingDir "\\" "/" }}
+    {{ $hugoWorkingDir = print (strings.TrimRight "/" $hugoWorkingDir) "/" }}
+    {{ $hugoCachedir = replace $hugoCachedir "\\" "/" }}
+    {{ $hugoCachedir = strings.TrimRight "/" $hugoCachedir }}
+    {{ if hasPrefix $hugoCachedir $hugoWorkingDir }}
+        {{ $hugoCachedir = substr $hugoCachedir (len $hugoWorkingDir) }}
+    {{ else }}
+        {{ warnf "cache dir is not inside hugo.WorkingDir using fallback value '%s'" $fallback  }}
+    {{ end }}
+{{ end }}
+{{ $hugoCachedir = default $fallback $hugoCachedir  }}
+{{ $hugoCachedirModules := print $hugoCachedir "/modules/filecache/modules/pkg/mod" }}
+{{ if os.FileExists $hugoCachedirModules }}
+    {{ $stat := os.Stat $hugoCachedirModules }}
+    {{ if $stat.IsDir }}
+        {{ $hugoCachedir = $hugoCachedirModules }}
+    {{ end }}
+{{ end }}
+{{ return $hugoCachedir }}
