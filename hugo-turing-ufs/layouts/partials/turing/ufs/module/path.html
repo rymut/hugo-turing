@@ -48,7 +48,7 @@
         {{ $hugoDependencyPath = default nil }}
     {{ end }}
 {{ else if or (not $dependencyName) (eq $dependencyName ".") }}
-    {{ $hugoDependencyPath = "." }}
+    {{ $hugoDependencyPath = "_deps/self" }}
 {{ end }}
 
 {{ if $hugoDependencyPath }}

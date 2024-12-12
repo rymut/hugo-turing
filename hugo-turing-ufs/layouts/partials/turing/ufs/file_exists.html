@@ -5,6 +5,8 @@
 
     @returns
         true if file exists false otherwise
+
+    TODO should handle includeFiles / excludeFiles
 */ -}}
 
 {{ $filePath := strings.TrimRight "/" . }}
@@ -20,17 +22,19 @@
     {{ $mounts := partialCached "turing/ufs/module/mounts_path.html" $hugoDependency $hugoDependency }}
     {{ range $mount := $mounts }}
         {{ if $mount }}
-            {{ $source := print (strings.TrimRight "/" $mount.source) "/" }}
-            {{ $target := print (strings.TrimRight "/" $mount.target) "/" }}
+            {{ $source := $mount.source }}
+            {{ $target := $mount.target }}
             {{ if hasPrefix $filePath $target }}
-                {{ $realPath := print $source "/" (replace $filePath $target "" 1)}}
+                {{ $realPath := print $source (replace $filePath $target "" 1) }}
                 {{ if os.FileExists $realPath }}
                     {{ $fileExists = true }}
+                    {{ break }}
                 {{ end }}
             {{ else if eq $filePath $target }}
                 {{ $realPath := print $source }}
                 {{ if os.FileExists $realPath }}
                     {{ $fileExists = true }}
+                    {{ break }}
                 {{- end -}}
             {{ end }}
         {{ end }}
